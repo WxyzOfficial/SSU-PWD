@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSU PWD | Inquiries & Messages</title>
+  
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f0f7ff;
+      min-height: 100vh;
+    }
+
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Header */
+    header {
+      background: white;
+      border-radius: 28px;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-area img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .logo-area h2 {
+      color: #0a4b7a;
+      font-size: 1.2rem;
+    }
+
+    .logo-area small {
+      display: block;
+      font-size: 0.75rem;
+      color: #4a5568;
+      font-weight: 400;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 48px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0a4b7a, #1e6a9f);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(10, 75, 122, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #0a4b7a;
+      color: #0a4b7a;
+    }
+
+    .btn-outline:hover {
+      background: #0a4b7a;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #0d9f6e;
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+    }
+
+    .btn-warning {
+      background: #f9b81b;
+      color: #1e2a3e;
+    }
+
+    .btn-warning:hover {
+      background: #e5a800;
+      transform: translateY(-2px);
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .card h3 {
+      color: #0a4b7a;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 1.2rem;
+    }
+
+    /* Tab Buttons */
+    .tab-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.8rem;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .tab-btn.active {
+      background: #0a4b7a;
+      color: white;
+    }
+
+    .tab-btn .badge-count {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: inherit;
+      padding: 1px 8px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      margin-left: 4px;
+    }
+
+    .tab-btn:not(.active) .badge-count {
+      background: #4a5568;
+      color: white;
+    }
+
+    /* Student List */
+    .student-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .student-card {
+      background: #f7fafc;
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .student-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-color: #0a4b7a;
+    }
+
+    .student-card .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #0a4b7a;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .student-card .info {
+      flex: 1;
+    }
+
+    .student-card .info .name {
+      font-weight: 600;
+      color: #1e2a3e;
+    }
+
+    .student-card .info .email {
+      font-size: 0.8rem;
+      color: #718096;
+    }
+
+    .student-card .info .last-message {
+      font-size: 0.75rem;
+      color: #4a5568;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .student-card .badge-unread {
+      background: #dc2626;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    /* Inquiry List */
+    .inquiry-item {
+      background: #f7fafc;
+      padding: 12px 16px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      border-left: 4px solid #0a4b7a;
+    }
+
+    .inquiry-item .inquiry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .inquiry-item .inquiry-sender {
+      font-weight: 600;
+      color: #0a4b7a;
+    }
+
+    .inquiry-item .inquiry-date {
+      font-size: 0.75rem;
+      color: #718096;
+    }
+
+    .inquiry-item .inquiry-message {
+      color: #1e2a3e;
+      margin: 6px 0;
+    }
+
+    .inquiry-item .inquiry-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .inquiry-status {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 40px;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+    .inquiry-pending { background: #feebc8; color: #c05621; }
+    .inquiry-ongoing { background: #bfdbfe; color: #1e40af; }
+    .inquiry-done { background: #c6f6d5; color: #276749; }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: #4a5568;
+      font-size: 1.1rem;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 32px;
+      max-width: 600px;
+      width: 92%;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      border-radius: 32px 32px 0 0;
+      z-index: 2;
+    }
+
+    .modal-header h3 {
+      color: #0a4b7a;
+      font-size: 1.2rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #4a5568;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #c53030;
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 1.2rem 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem 1.2rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      border-top: 1px solid #e2e8f0;
+      position: sticky;
+      bottom: 0;
+      background: white;
+      border-radius: 0 0 32px 32px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      border-color: #f9b81b;
+      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+    }
+
+    .modal-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+      transition: border 0.2s;
+    }
+
+    .modal-textarea:focus {
+      outline: none;
+      border-color: #f9b81b;
+      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+    }
+
+    /* Chat Modal */
+    .chat-modal .modal-container {
+      max-width: 600px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 10px;
+    }
+
+    .chat-header .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #0a4b7a;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .chat-header .chat-user {
+      font-weight: 600;
+      color: #1e2a3e;
+    }
+
+    .chat-header .chat-status {
+      font-size: 0.75rem;
+      color: #718096;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 400px;
+      padding: 10px 0;
+      border-top: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .chat-message {
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      max-width: 80%;
+    }
+
+    .chat-message.sent {
+      background: #0a4b7a;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-message.received {
+      background: #f1f5f9;
+      color: #1e2a3e;
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-message .msg-time {
+      font-size: 0.65rem;
+      opacity: 0.7;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 10px;
+      padding-top: 12px;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 10px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 48px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .chat-input-area input:focus {
+      border-color: #f9b81b;
+    }
+
+    /* Custom Alert */
+    .custom-alert-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .custom-alert-overlay.active {
+      display: flex;
+    }
+
+    .custom-alert-box {
+      background: white;
+      border-radius: 28px;
+      max-width: 400px;
+      width: 90%;
+      padding: 1.8rem 2rem 1.5rem;
+      animation: slideUp 0.3s ease;
+      text-align: center;
+    }
+
+    .custom-alert-box .alert-icon {
+      font-size: 3rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .custom-alert-box .alert-icon.success { color: #10b981; }
+    .custom-alert-box .alert-icon.error { color: #dc2626; }
+    .custom-alert-box .alert-icon.warning { color: #f9b81b; }
+    .custom-alert-box .alert-icon.info { color: #0a4b7a; }
+
+    .custom-alert-box .alert-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e2a3e;
+      margin-bottom: 0.5rem;
+    }
+
+    .custom-alert-box .alert-message {
+      color: #4a5568;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .custom-alert-box .alert-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .custom-alert-box .alert-buttons .btn {
+      min-width: 80px;
+      justify-content: center;
+    }
+
+    .loading-spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #0a4b7a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #0a4b7a;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding: 6px 12px;
+      border-radius: 40px;
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2ff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .page-container { padding: 1rem; }
+      header { padding: 1rem; flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .nav-buttons { width: 100%; justify-content: flex-start; }
+      .student-list { grid-template-columns: 1fr; }
+      .chat-modal .modal-container { max-width: 95%; }
+      .tab-container { flex-direction: column; }
+      .tab-btn { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-area">
+      <img src="https://wxyzofficial.sirv.com/USC-Election/ssu.jpg" alt="SSU Logo">
+      <div>
+        <h2>SSU PWD Support System</h2>
+        <small>Inquiries & Messages</small>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <span id="adminEmail" style="color: #4a5568; font-size: 0.85rem; margin-right: 0.5rem;"></span>
+      <a href="admin.html" class="btn btn-outline"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <button id="logoutBtn" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </header>
+
+  <!-- Back to Dashboard -->
+  <a href="admin.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+  <!-- Main Content -->
+  <div class="card">
+    <h3><i class="fas fa-comments"></i> Inquiries & Messages</h3>
+
+    <!-- Tabs -->
+    <div class="tab-container">
+      <button class="tab-btn active" data-tab="inquiries" onclick="switchTab('inquiries')">
+        <i class="fas fa-question-circle"></i> Inquiries <span id="inquiryCount" class="badge-count">0</span>
+      </button>
+      <button class="tab-btn" data-tab="messages" onclick="switchTab('messages')">
+        <i class="fas fa-envelope"></i> Conversations <span id="messageCount" class="badge-count">0</span>
+      </button>
+    </div>
+
+    <!-- Inquiries Tab -->
+    <div id="inquiriesTab" class="tab-content active">
+      <div id="inquiriesList"></div>
+    </div>
+
+    <!-- Messages/Conversations Tab -->
+    <div id="messagesTab" class="tab-content">
+      <p style="color: #4a5568; margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Click on a student to view and reply to their messages</p>
+      <div id="studentConversationsList" class="student-list">
+        <div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-spinner fa-spin"></i> Loading students...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="modal-overlay chat-modal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3><i class="fas fa-comment-dots"></i> Conversation</h3>
+      <button class="modal-close" onclick="closeChatModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;max-height:70vh;">
+      <div class="chat-header">
+        <div class="avatar" id="chatAvatar">S</div>
+        <div>
+          <div class="chat-user" id="chatUserName">Student</div>
+          <div class="chat-status" id="chatUserStatus">Online</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+        <button class="btn btn-primary" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reply Inquiry Modal -->
+<div id="replyInquiryModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header">
+      <h3><i class="fas fa-reply"></i> Reply to Inquiry</h3>
+      <button class="modal-close" onclick="closeReplyInquiryModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>From</label>
+        <input type="text" id="replyInquirySender" class="modal-input" disabled>
+      </div>
+      <div class="form-group">
+        <label>Original Message</label>
+        <textarea id="replyInquiryOriginal" class="modal-textarea" disabled style="background:#f7fafc;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Reply</label>
+        <textarea id="replyInquiryContent" class="modal-textarea" placeholder="Type your reply..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Update Status</label>
+        <select id="replyInquiryStatus" class="modal-input">
+          <option value="pending">Pending</option>
+          <option value="ongoing">On-going</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeReplyInquiryModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" id="sendReplyInquiryBtn"><i class="fas fa-reply"></i> Send Reply</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Alert -->
+<div id="customAlert" class="custom-alert-overlay">
+  <div class="custom-alert-box">
+    <div class="alert-icon" id="alertIcon"><i class="fas fa-info-circle"></i></div>
+    <div class="alert-title" id="alertTitle">Alert</div>
+    <div class="alert-message" id="alertMessage">Message goes here</div>
+    <div class="alert-buttons" id="alertButtons">
+      <button class="btn btn-primary" onclick="closeCustomAlert()"><i class="fas fa-check"></i> OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2Dk1HkuV-HT6Ew32BDYNmNmGDU6SMZiU",
+    authDomain: "pwd-websystem.firebaseapp.com",
+    projectId: "pwd-websystem",
+    storageBucket: "pwd-websystem.firebasestorage.app",
+    messagingSenderId: "249152340011",
+    appId: "1:249152340011:web:1dd994b57a0f878be46a6e"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentAdmin = null;
+  let selectedUserId = null;
+  let selectedUserName = null;
+  let selectedInquiryId = null;
+  let chatUnsubscribe = null;
+
+  // ==========================================
+  // CUSTOM ALERT
+  // ==========================================
+  function showCustomAlert(title, message, type = 'info', confirmText = 'OK', onConfirm = null) {
+    const overlay = document.getElementById('customAlert');
+    const icon = document.getElementById('alertIcon');
+    const titleEl = document.getElementById('alertTitle');
+    const msgEl = document.getElementById('alertMessage');
+    const buttons = document.getElementById('alertButtons');
+
+    icon.className = 'alert-icon ' + type;
+    const icons = {
+      success: 'fa-check-circle',
+      error: 'fa-times-circle',
+      warning: 'fa-exclamation-triangle',
+      info: 'fa-info-circle'
+    };
+    icon.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i>`;
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+
+    buttons.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = `btn btn-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'primary'}`;
+    btn.innerHTML = `<i class="fas fa-check"></i> ${confirmText}`;
+    btn.onclick = () => {
+      closeCustomAlert();
+      if (onConfirm) onConfirm();
+    };
+    buttons.appendChild(btn);
+
+    overlay.classList.add('active');
+  }
+
+  function showCustomConfirm(title, message, onConfirm, onCancel = null) {
+    const overlay = document.getElementById('customAlert');
+    const icon = document.getElementById('alertIcon');
+    const titleEl = document.getElementById('alertTitle');
+    const msgEl = document.getElementById('alertMessage');
+    const buttons = document.getElementById('alertButtons');
+
+    icon.className = 'alert-icon warning';
+    icon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+    titleEl.textContent = title;
+    msgEl.innerHTML = message;
+
+    buttons.innerHTML = '';
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-outline';
+    cancelBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
+    cancelBtn.onclick = () => {
+      closeCustomAlert();
+      if (onCancel) onCancel();
+    };
+    buttons.appendChild(cancelBtn);
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'btn btn-danger';
+    confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirm';
+    confirmBtn.onclick = () => {
+      closeCustomAlert();
+      if (onConfirm) onConfirm();
+    };
+    buttons.appendChild(confirmBtn);
+
+    overlay.classList.add('active');
+  }
+
+  function closeCustomAlert() {
+    document.getElementById('customAlert').classList.remove('active');
+  }
+
+  // ==========================================
+  // TAB SWITCHING
+  // ==========================================
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    
+    document.getElementById('inquiriesTab').classList.toggle('active', tab === 'inquiries');
+    document.getElementById('messagesTab').classList.toggle('active', tab === 'messages');
+    
+    if (tab === 'messages') {
+      loadStudentConversations();
+    }
+  }
+
+  // ==========================================
+  // CHAT MODAL
+  // ==========================================
+  function openChatModal(userId, userName) {
+    selectedUserId = userId;
+    selectedUserName = userName;
+    
+    document.getElementById('chatAvatar').textContent = (userName || 'S').charAt(0).toUpperCase();
+    document.getElementById('chatUserName').textContent = userName || 'Student';
+    document.getElementById('chatInput').value = '';
+    document.getElementById('chatModal').classList.add('active');
+    
+    loadChatMessages(userId);
+  }
+
+  function closeChatModal() {
+    document.getElementById('chatModal').classList.remove('active');
+    if (chatUnsubscribe) {
+      chatUnsubscribe();
+      chatUnsubscribe = null;
+    }
+  }
+
+  function loadChatMessages(userId) {
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = '<div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>';
+    
+    if (chatUnsubscribe) chatUnsubscribe();
+    
+    chatUnsubscribe = db.collection('messages')
+      .where('userId', '==', userId)
+      .orderBy('timestamp', 'asc')
+      .onSnapshot(snap => {
+        let html = '';
+        if (snap.empty) {
+          html = '<div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-comment"></i> No messages yet. Start a conversation!</div>';
+        } else {
+          snap.forEach(doc => {
+            const msg = doc.data();
+            const date = msg.timestamp?.toDate?.() || new Date();
+            const isAdmin = msg.role === 'admin' || msg.sender === 'Admin';
+            html += `<div class="chat-message ${isAdmin ? 'sent' : 'received'}">
+              ${msg.text || msg.message || ''}
+              <span class="msg-time">${date.toLocaleString()}</span>
+            </div>`;
+          });
+        }
+        container.innerHTML = html;
+        container.scrollTop = container.scrollHeight;
+      });
+  }
+
+  async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message || !selectedUserId) return;
+    
+    input.value = '';
+    
+    try {
+      await db.collection('messages').add({
+        userId: selectedUserId,
+        sender: 'Admin',
+        text: message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        role: 'admin',
+        read: false
+      });
+      
+      await db.collection('notifications').add({
+        userId: selectedUserId,
+        title: 'New Message from Admin',
+        body: message.substring(0, 150) + (message.length > 150 ? '...' : ''),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        type: 'admin_message'
+      });
+      
+    } catch (error) {
+      showCustomAlert('Error', 'Failed to send message: ' + error.message, 'error');
+    }
+  }
+
+  // ==========================================
+  // LOAD STUDENT CONVERSATIONS
+  // ==========================================
+  function loadStudentConversations() {
+    const container = document.getElementById('studentConversationsList');
+    container.innerHTML = '<div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-spinner fa-spin"></i> Loading students...</div>';
+    
+    db.collection('users').where('role', '==', 'student').orderBy('createdAt', 'desc').onSnapshot(snap => {
+      let html = '';
+      let count = 0;
+      
+      if (snap.empty) {
+        html = '<div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-user-graduate"></i> No students registered</div>';
+      } else {
+        snap.forEach(doc => {
+          const student = doc.data();
+          const userId = doc.id;
+          const initial = (student.name || 'S').charAt(0).toUpperCase();
+          count++;
+          
+          // Get last message for this student
+          db.collection('messages')
+            .where('userId', '==', userId)
+            .orderBy('timestamp', 'desc')
+            .limit(1)
+            .get()
+            .then(msgSnap => {
+              let lastMsg = 'No messages yet';
+              let hasUnread = false;
+              if (!msgSnap.empty) {
+                const msg = msgSnap.docs[0].data();
+                lastMsg = msg.text || msg.message || '';
+                hasUnread = msg.role !== 'admin' && !msg.read;
+              }
+              
+              const cardEl = document.getElementById(`student_card_${userId}`);
+              if (cardEl) {
+                const msgEl = cardEl.querySelector('.last-message');
+                if (msgEl) msgEl.textContent = lastMsg.substring(0, 60) + (lastMsg.length > 60 ? '...' : '');
+                const badgeEl = cardEl.querySelector('.badge-unread');
+                if (badgeEl) {
+                  badgeEl.style.display = hasUnread ? 'inline-block' : 'none';
+                }
+              }
+            });
+          
+          html += `
+            <div class="student-card" id="student_card_${userId}" onclick="openChatModal('${userId}', '${student.name || 'Student'}')">
+              <div class="avatar">${initial}</div>
+              <div class="info">
+                <div class="name">${student.name || 'Student'}</div>
+                <div class="email">${student.email || ''}</div>
+                <div class="last-message">Loading...</div>
+              </div>
+              <span class="badge-unread" style="display:none;">New</span>
+            </div>
+          `;
+        });
+      }
+      
+      container.innerHTML = html;
+      document.getElementById('messageCount').textContent = count;
+    });
+  }
+
+  // ==========================================
+  // LOAD INQUIRIES
+  // ==========================================
+  function loadInquiries() {
+    db.collection('inquiries').orderBy('timestamp', 'desc').onSnapshot(snap => {
+      let html = '';
+      let count = 0;
+      
+      if (snap.empty) {
+        html = '<div class="no-results"><i class="fas fa-inbox"></i> No inquiries</div>';
+      } else {
+        snap.forEach(doc => {
+          const inq = doc.data();
+          count++;
+          const date = inq.timestamp?.toDate?.() || new Date();
+          const statusClass = `inquiry-${inq.status || 'pending'}`;
+          const statusLabel = (inq.status || 'pending').toUpperCase();
+          const replyCount = inq.replies ? inq.replies.length : 0;
+          
+          html += `<div class="inquiry-item">
+            <div class="inquiry-header">
+              <span class="inquiry-sender"><i class="fas fa-user"></i> ${inq.sender || 'Student'}</span>
+              <span class="inquiry-date"><i class="fas fa-clock"></i> ${date.toLocaleString()}</span>
+            </div>
+            <div class="inquiry-message"><i class="fas fa-quote-left" style="color:#a0aec0;"></i> ${inq.message || ''}</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;">
+              <span class="inquiry-status ${statusClass}"><i class="fas fa-circle"></i> ${statusLabel}</span>
+              <span style="font-size:0.75rem;color:#718096;"><i class="fas fa-reply"></i> ${replyCount} replies</span>
+            </div>
+            <div class="inquiry-actions">
+              <button class="btn btn-sm btn-primary" onclick="showReplyInquiryModal('${doc.id}', '${inq.sender}', '${inq.message}', '${inq.status || 'pending'}')"><i class="fas fa-reply"></i> Reply</button>
+              ${inq.status !== 'done' ? `<button class="btn btn-sm btn-success" onclick="markInquiryDone('${doc.id}')"><i class="fas fa-check"></i> Mark Done</button>` : ''}
+              <button class="btn btn-sm btn-danger" onclick="deleteInquiry('${doc.id}')"><i class="fas fa-trash-alt"></i></button>
+            </div>
+            ${replyCount > 0 ? `<div style="margin-top:8px;padding:8px 12px;background:#edf2f7;border-radius:12px;font-size:0.8rem;">
+              <strong><i class="fas fa-reply-all"></i> Latest Reply:</strong><br>
+              ${inq.replies[inq.replies.length - 1].message}
+              <br><small style="color:#718096;">${new Date(inq.replies[inq.replies.length - 1].timestamp).toLocaleString()}</small>
+            </div>` : ''}
+          </div>`;
+        });
+      }
+      
+      document.getElementById('inquiriesList').innerHTML = html;
+      document.getElementById('inquiryCount').textContent = count;
+    });
+  }
+
+  // ==========================================
+  // INQUIRY REPLY MODAL
+  // ==========================================
+  function showReplyInquiryModal(inquiryId, sender, message, currentStatus) {
+    selectedInquiryId = inquiryId;
+    document.getElementById('replyInquirySender').value = sender || 'Student';
+    document.getElementById('replyInquiryOriginal').value = message || '';
+    document.getElementById('replyInquiryContent').value = '';
+    document.getElementById('replyInquiryStatus').value = currentStatus || 'pending';
+    document.getElementById('replyInquiryModal').classList.add('active');
+  }
+
+  function closeReplyInquiryModal() {
+    document.getElementById('replyInquiryModal').classList.remove('active');
+  }
+
+  document.getElementById('sendReplyInquiryBtn').onclick = async () => {
+    const reply = document.getElementById('replyInquiryContent').value.trim();
+    const newStatus = document.getElementById('replyInquiryStatus').value;
+    
+    if (!reply) {
+      showCustomAlert('Message Required', 'Please enter a reply message.', 'warning');
+      return;
+    }
+    
+    const sendBtn = document.getElementById('sendReplyInquiryBtn');
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    
+    try {
+      const inquiryRef = db.collection('inquiries').doc(selectedInquiryId);
+      const inquiryDoc = await inquiryRef.get();
+      
+      if (!inquiryDoc.exists) {
+        showCustomAlert('Error', 'Inquiry not found.', 'error');
+        return;
+      }
+      
+      const data = inquiryDoc.data();
+      const replies = data.replies || [];
+      
+      replies.push({
+        from: 'Admin',
+        message: reply,
+        timestamp: new Date().toISOString()
+      });
+      
+      await inquiryRef.update({
+        status: newStatus,
+        replies: replies,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastReplyAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      await db.collection('notifications').add({
+        userId: data.userId || 'all',
+        title: 'New Reply to Your Inquiry',
+        body: `Admin replied to your inquiry: "${reply.substring(0, 80)}${reply.length > 80 ? '...' : ''}"`,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        type: 'inquiry_reply'
+      });
+      
+      showCustomAlert('Success', 'Reply sent successfully!', 'success');
+      closeReplyInquiryModal();
+    } catch (error) {
+      showCustomAlert('Error', 'Error sending reply: ' + error.message, 'error');
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = '<i class="fas fa-reply"></i> Send Reply';
+    }
+  };
+
+  // ==========================================
+  // INQUIRY ACTIONS
+  // ==========================================
+  window.markInquiryDone = (inquiryId) => {
+    showCustomConfirm(
+      'Mark as Done',
+      'Mark this inquiry as <strong>Done</strong>?<br><br><span style="color:#718096;font-size:0.9rem;">The student will be notified.</span>',
+      async () => {
+        await db.collection('inquiries').doc(inquiryId).update({
+          status: 'done',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        const inquiryDoc = await db.collection('inquiries').doc(inquiryId).get();
+        if (inquiryDoc.exists) {
+          const data = inquiryDoc.data();
+          await db.collection('notifications').add({
+            userId: data.userId || 'all',
+            title: 'Inquiry Resolved',
+            body: `Your inquiry "${data.message?.substring(0, 50)}..." has been marked as resolved.`,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            type: 'inquiry_update'
+          });
+        }
+        showCustomAlert('Success', 'Inquiry marked as done!', 'success');
+      }
+    );
+  };
+
+  window.deleteInquiry = (inquiryId) => {
+    showCustomConfirm(
+      'Delete Inquiry',
+      'Delete this inquiry?<br><br><span style="color:#dc2626;"><i class="fas fa-exclamation-circle"></i> This cannot be undone!</span>',
+      async () => {
+        try {
+          await db.collection('inquiries').doc(inquiryId).delete();
+          showCustomAlert('Success', 'Inquiry deleted successfully!', 'success');
+        } catch (error) {
+          showCustomAlert('Error', 'Error deleting inquiry: ' + error.message, 'error');
+        }
+      }
+    );
+  };
+
+  // ==========================================
+  // AUTH CHECK
+  // ==========================================
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    if (!userDoc.exists || userDoc.data().role !== 'admin') {
+      showCustomAlert('Access Denied', 'Admin privileges required!', 'error');
+      await auth.signOut();
+      window.location.href = 'index.html';
+      return;
+    }
+
+    currentAdmin = { uid: user.uid, email: user.email, ...userDoc.data() };
+    document.getElementById('adminEmail').innerText = user.email;
+    
+    loadInquiries();
+    loadStudentConversations();
+  });
+
+  // ==========================================
+  // LOGOUT
+  // ==========================================
+  document.getElementById('logoutBtn').onclick = () => {
+    showCustomConfirm(
+      'Logout',
+      'Logout from inquiries page?',
+      async () => {
+        await db.collection('auditLogs').add({
+          action: 'admin_logout',
+          adminId: currentAdmin?.uid,
+          adminEmail: currentAdmin?.email,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await auth.signOut();
+        window.location.href = 'index.html';
+      }
+    );
+  };
+
+  // Close modals on escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeChatModal();
+      closeReplyInquiryModal();
+      closeCustomAlert();
+    }
+  });
+
+  // Close chat modal when clicking overlay
+  document.getElementById('chatModal').addEventListener('click', function(e) {
+    if (e.target === this) closeChatModal();
+  });
+
+  // Close reply modal when clicking overlay
+  document.getElementById('replyInquiryModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReplyInquiryModal();
+  });
+</script>
+
+</body>
+</html>

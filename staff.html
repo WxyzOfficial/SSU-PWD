@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSU PWD | Staff Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f0f7ff; }
+    .staff-container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+    header { background: white; border-radius: 28px; padding: 1rem 2rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .logo-area { display: flex; align-items: center; gap: 1rem; }
+    .logo-area img { width: 55px; border-radius: 50%; }
+    .btn { padding: 10px 20px; border: none; border-radius: 48px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+    .btn-primary { background: linear-gradient(135deg, #0a4b7a, #1e6a9f); color: white; }
+    .btn-warning { background: #f9b81b; color: #1e2a3e; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+    .card { background: white; border-radius: 28px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; font-weight: bold; }
+    .pending { background: #feebc8; color: #c05621; }
+    .approved { background: #c6f6d5; color: #276749; }
+    .rejected { background: #fed7d7; color: #c53030; }
+    .user-item { border: 1px solid #e2e8f0; border-radius: 20px; padding: 1rem; margin-bottom: 1rem; transition: all 0.2s; }
+    .user-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    input, select, textarea { width: 100%; padding: 10px; border-radius: 40px; border: 2px solid #e2e8f0; margin: 8px 0; }
+    .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1rem; }
+    .inquiry-item { background: #f7fafc; padding: 12px; border-radius: 20px; margin: 10px 0; }
+    .stats-mini { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .stat-mini-card { background: linear-gradient(135deg, #0a4b7a, #1e6a9f); color: white; padding: 1rem; border-radius: 20px; flex: 1; text-align: center; }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-container {
+      background: white;
+      border-radius: 32px;
+      max-width: 90%;
+      width: auto;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease;
+    }
+    .modal-header {
+      padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { color: #0a4b7a; font-size: 1.3rem; }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #4a5568;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { color: #c53030; transform: scale(1.1); }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer {
+      padding: 1rem 1.5rem 1.5rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      border-top: 1px solid #e2e8f0;
+    }
+    .document-viewer { max-width: 800px; min-width: 300px; }
+    .document-viewer img, .document-viewer iframe { max-width: 100%; border-radius: 16px; }
+    .document-viewer .doc-section { margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; }
+    .document-viewer .doc-title { font-weight: bold; color: #0a4b7a; margin-bottom: 10px; font-size: 1.1rem; }
+    .no-doc { color: #c53030; font-style: italic; padding: 10px; background: #fed7d7; border-radius: 12px; }
+    .reply-modal-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 24px; margin-top: 8px; font-size: 1rem; }
+    
+    /* Profile Modal Styles */
+    .profile-viewer { max-width: 500px; min-width: 300px; }
+    .profile-field { margin-bottom: 15px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+    .profile-label { font-weight: bold; color: #0a4b7a; width: 120px; display: inline-block; }
+    .profile-value { color: #2d3748; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @media (max-width: 768px) { .staff-container { padding: 1rem; } }
+  </style>
+</head>
+<body>
+<div class="staff-container">
+  <header>
+    <div class="logo-area"><img src="https://wxyzofficial.sirv.com/USC-Election/ssu.jpg"><div><strong>SSU PWD Office - Staff Panel</strong><br><span id="staffName">Loading...</span></div></div>
+    <button id="logoutBtn" class="btn" style="background:#e2e8f0;">Logout</button>
+  </header>
+
+  <div class="stats-mini">
+    <div class="stat-mini-card"><span id="totalPWD">0</span><br>Total PWDs</div>
+    <div class="stat-mini-card"><span id="pendingCount">0</span><br>Pending</div>
+    <div class="stat-mini-card"><span id="approvedCount">0</span><br>Approved</div>
+  </div>
+
+  <div class="card">
+    <h3>👥 PWD Student Applications (Pending Only)</h3>
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="🔍 Search by name or course" style="flex:2">
+    </div>
+    <div id="studentsList"></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>💬 Student Inquiries (Reply)</h3>
+      <div id="inquiriesList" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+    <div class="card">
+      <h3>📢 Send Announcement to All</h3>
+      <input type="text" id="announceTitle" placeholder="Announcement Title">
+      <textarea id="announceBody" rows="4" placeholder="Message content..."></textarea>
+      <button id="sendAnnounceBtn" class="btn btn-primary">📡 Broadcast Announcement</button>
+      <hr style="margin: 1rem 0">
+      <h4>📊 Generate Reports</h4>
+      <button id="exportReportBtn" class="btn btn-warning">📎 Export CSV (All PWDs)</button>
+      <button id="exportPendingBtn" class="btn btn-warning" style="margin-top: 8px;">⏳ Export Approved Only</button>
+    </div>
+  </div>
+</div>
+
+<!-- Document Viewer Modal -->
+<div id="docViewerModal" class="modal-overlay">
+  <div class="modal-container document-viewer">
+    <div class="modal-header">
+      <h3 id="docViewerTitle">Student Documents</h3>
+      <button class="modal-close" onclick="closeDocViewer()">&times;</button>
+    </div>
+    <div class="modal-body" id="docViewerBody">Loading documents...</div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeDocViewer()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Viewer Modal -->
+<div id="profileModal" class="modal-overlay">
+  <div class="modal-container profile-viewer">
+    <div class="modal-header">
+      <h3>Student Profile</h3>
+      <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="profileBody">Loading profile...</div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeProfileModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal for Approve/Reject -->
+<div id="confirmModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 450px;">
+    <div class="modal-header">
+      <h3 id="confirmTitle">Confirm Action</h3>
+      <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="confirmBody">Are you sure you want to perform this action?</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn btn-primary" id="confirmActionBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reply Modal -->
+<div id="replyModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header">
+      <h3>Reply to Student</h3>
+      <button class="modal-close" onclick="closeReplyModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="replyText" class="reply-modal-input" rows="4" placeholder="Type your reply here..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeReplyModal()">Cancel</button>
+      <button class="btn btn-primary" id="sendReplyBtn">Send Reply</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2Dk1HkuV-HT6Ew32BDYNmNmGDU6SMZiU",
+    authDomain: "pwd-websystem.firebaseapp.com",
+    projectId: "pwd-websystem",
+    storageBucket: "pwd-websystem.firebasestorage.app",
+    messagingSenderId: "249152340011",
+    appId: "1:249152340011:web:1dd994b57a0f878be46a6e"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentUserId = null;
+  let currentReplyMsgId = null;
+  let currentReplyUserId = null;
+  let pendingAction = null;
+  let pendingUserId = null;
+  let pendingNewStatus = null;
+
+  // Document Viewer Modal
+  function showDocViewer(userId, userName) {
+    const modal = document.getElementById("docViewerModal");
+    const title = document.getElementById("docViewerTitle");
+    const body = document.getElementById("docViewerBody");
+    
+    title.textContent = `Documents: ${userName || "Student"}`;
+    body.innerHTML = '<div style="text-align:center"><div class="loading-spinner" style="width:30px;height:30px;border:3px solid #e2e8f0;border-top-color:#0a4b7a;border-radius:50%;animation:spin 1s linear infinite;display:inline-block;"></div><p>Loading documents...</p></div>';
+    
+    modal.classList.add('active');
+    
+    db.collection("users").doc(userId).get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        let html = '';
+        
+        html += `<div class="doc-section"><div class="doc-title">📄 Medical Certificate</div>`;
+        if (data.medicalCert && data.medicalCert !== "") {
+          if (data.medicalCert.includes('image')) {
+            html += `<img src="${data.medicalCert}" alt="Medical Certificate" style="max-width:100%; border-radius:12px; margin-top:10px;">`;
+          } else {
+            html += `<iframe src="${data.medicalCert}" style="width:100%; height:400px; border:none; border-radius:12px; margin-top:10px;"></iframe>`;
+          }
+          html += `<div style="margin-top:10px"><a href="${data.medicalCert}" download="medical_certificate" class="btn btn-sm btn-primary" style="text-decoration:none;">📥 Download</a></div>`;
+        } else {
+          html += `<div class="no-doc">❌ No medical certificate uploaded</div>`;
+        }
+        html += `</div>`;
+        
+        html += `<div class="doc-section"><div class="doc-title">🆔 PWD ID Card</div>`;
+        if (data.pwdIdCard && data.pwdIdCard !== "") {
+          if (data.pwdIdCard.includes('image')) {
+            html += `<img src="${data.pwdIdCard}" alt="PWD ID Card" style="max-width:100%; border-radius:12px; margin-top:10px;">`;
+          } else {
+            html += `<iframe src="${data.pwdIdCard}" style="width:100%; height:400px; border:none; border-radius:12px; margin-top:10px;"></iframe>`;
+          }
+          html += `<div style="margin-top:10px"><a href="${data.pwdIdCard}" download="pwd_id_card" class="btn btn-sm btn-primary" style="text-decoration:none;">📥 Download</a></div>`;
+        } else {
+          html += `<div class="no-doc">❌ No PWD ID card uploaded</div>`;
+        }
+        html += `</div>`;
+        
+        html += `<div class="doc-section"><div class="doc-title">🎓 School ID</div>`;
+        if (data.schoolId && data.schoolId !== "") {
+          if (data.schoolId.includes('image')) {
+            html += `<img src="${data.schoolId}" alt="School ID" style="max-width:100%; border-radius:12px; margin-top:10px;">`;
+          } else {
+            html += `<iframe src="${data.schoolId}" style="width:100%; height:400px; border:none; border-radius:12px; margin-top:10px;"></iframe>`;
+          }
+          html += `<div style="margin-top:10px"><a href="${data.schoolId}" download="school_id" class="btn btn-sm btn-primary" style="text-decoration:none;">📥 Download</a></div>`;
+        } else {
+          html += `<div class="no-doc">❌ No school ID uploaded</div>`;
+        }
+        html += `</div>`;
+        
+        body.innerHTML = html;
+      } else {
+        body.innerHTML = '<div class="no-doc">No user data found</div>';
+      }
+    }).catch(error => {
+      body.innerHTML = `<div class="no-doc">Error loading documents: ${error.message}</div>`;
+    });
+  }
+  
+  function closeDocViewer() { document.getElementById("docViewerModal").classList.remove('active'); }
+  
+  // Profile Viewer Modal
+  function showProfileModal(userId) {
+    const modal = document.getElementById("profileModal");
+    const body = document.getElementById("profileBody");
+    body.innerHTML = '<div style="text-align:center"><div class="loading-spinner" style="width:30px;height:30px;border:3px solid #e2e8f0;border-top-color:#0a4b7a;border-radius:50%;animation:spin 1s linear infinite;display:inline-block;"></div><p>Loading profile...</p></div>';
+    modal.classList.add('active');
+    
+    db.collection("users").doc(userId).get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        const statusClass = data.status || "pending";
+        const statusText = data.status ? data.status.toUpperCase() : "PENDING";
+        const statusColor = data.status === "approved" ? "#10b981" : (data.status === "rejected" ? "#dc2626" : "#f9b81b");
+        
+        let html = `
+          <div class="profile-field"><span class="profile-label">Full Name:</span> <span class="profile-value">${data.name || "N/A"}</span></div>
+          <div class="profile-field"><span class="profile-label">Course:</span> <span class="profile-value">${data.course || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label">Disability:</span> <span class="profile-value">${data.disability || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label">Email:</span> <span class="profile-value">${data.email || "N/A"}</span></div>
+          <div class="profile-field"><span class="profile-label">Contact:</span> <span class="profile-value">${data.contact || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label">Status:</span> <span class="status-badge ${data.status || 'pending'}" style="background:${statusColor}20; color:${statusColor};">${statusText}</span></div>
+          <div class="profile-field"><span class="profile-label">Registered:</span> <span class="profile-value">${data.createdAt?.toDate?.()?.toLocaleString() || "N/A"}</span></div>
+          <div class="profile-field"><span class="profile-label">Last Active:</span> <span class="profile-value">${data.lastActive?.toDate?.()?.toLocaleString() || "Never"}</span></div>
+        `;
+        body.innerHTML = html;
+      } else {
+        body.innerHTML = '<div class="no-doc">User not found</div>';
+      }
+    }).catch(error => {
+      body.innerHTML = `<div class="no-doc">Error: ${error.message}</div>`;
+    });
+  }
+  
+  function closeProfileModal() { document.getElementById("profileModal").classList.remove('active'); }
+  
+  // Confirmation Modal
+  function showConfirmModal(title, message, onConfirm) {
+    document.getElementById("confirmTitle").textContent = title;
+    document.getElementById("confirmBody").innerHTML = message;
+    const confirmBtn = document.getElementById("confirmActionBtn");
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    newConfirmBtn.id = "confirmActionBtn";
+    newConfirmBtn.onclick = () => {
+      onConfirm();
+      closeConfirmModal();
+    };
+    document.getElementById("confirmModal").classList.add('active');
+  }
+  
+  function closeConfirmModal() { document.getElementById("confirmModal").classList.remove('active'); }
+  
+  // Reply Modal
+  function showReplyModal(msgId, userId) {
+    currentReplyMsgId = msgId;
+    currentReplyUserId = userId;
+    document.getElementById("replyText").value = "";
+    document.getElementById("replyModal").classList.add('active');
+  }
+  
+  function closeReplyModal() { document.getElementById("replyModal").classList.remove('active'); }
+  
+  async function sendReply() {
+    const replyText = document.getElementById("replyText").value.trim();
+    if (!replyText) {
+      alert("Please enter a reply message");
+      return;
+    }
+    
+    const sendBtn = document.getElementById("sendReplyBtn");
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span class="loading-spinner" style="display:inline-block;width:16px;height:16px;"></span> Sending...';
+    
+    try {
+      await db.collection("messages").add({
+        userId: currentReplyUserId,
+        sender: `Staff: ${auth.currentUser.email}`,
+        text: replyText,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        role: "staff",
+        inReplyTo: currentReplyMsgId
+      });
+      
+      await db.collection("notifications").add({
+        userId: currentReplyUserId,
+        title: "New Reply from Staff",
+        body: `Staff responded to your inquiry: "${replyText.substring(0, 100)}${replyText.length > 100 ? '...' : ''}"`,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        type: "reply"
+      });
+      
+      alert("Reply sent successfully!");
+      closeReplyModal();
+    } catch (error) {
+      alert("Error sending reply: " + error.message);
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = "Send Reply";
+    }
+  }
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) { window.location.href = "index.html"; return; }
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    if (!userDoc.exists || (userDoc.data().role !== "staff" && userDoc.data().role !== "admin")) {
+      alert("Access denied: Staff only");
+      auth.signOut();
+      window.location.href = "index.html";
+      return;
+    }
+    document.getElementById("staffName").innerText = user.email;
+    loadStudents();
+    loadInquiries();
+    loadStats();
+  });
+
+  function loadStats() {
+    db.collection("users").where("role", "==", "student").onSnapshot(snap => {
+      let total = 0, pending = 0, approved = 0;
+      snap.forEach(doc => {
+        total++;
+        if (doc.data().status === "pending") pending++;
+        if (doc.data().status === "approved") approved++;
+      });
+      document.getElementById("totalPWD").innerText = total;
+      document.getElementById("pendingCount").innerText = pending;
+      document.getElementById("approvedCount").innerText = approved;
+    });
+  }
+
+  function loadStudents() {
+    const search = document.getElementById("searchInput");
+    function render() {
+      // Only show PENDING students in the applications list
+      db.collection("users").where("role", "==", "student").where("status", "==", "pending").onSnapshot(snap => {
+        let users = [];
+        snap.forEach(d => users.push({ id: d.id, ...d.data() }));
+        const searchTerm = search.value.toLowerCase();
+        let filtered = users.filter(u => (u.name?.toLowerCase().includes(searchTerm) || u.course?.toLowerCase().includes(searchTerm)));
+        let html = "";
+        if (filtered.length === 0) {
+          html = "<div style='text-align:center; padding: 2rem; color: #4a5568;'>✅ No pending applications</div>";
+        } else {
+          filtered.forEach(u => {
+            html += `<div class="user-item">
+              <strong>${u.name || "No name"}</strong> | ${u.course} | ${u.disability}<br>
+              Email: ${u.email}<br>
+              Contact: ${u.contact || "N/A"}<br>
+              Status: <span class="status-badge pending">PENDING</span><br>
+              Registered: ${u.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"}<br>
+              <button class="btn btn-success" style="padding:5px 12px; margin:5px;" onclick="promptApprove('${u.id}', '${u.name}')">✅ Approve</button>
+              <button class="btn btn-danger" style="padding:5px 12px; margin:5px;" onclick="promptReject('${u.id}', '${u.name}')">❌ Reject</button>
+              <button class="btn btn-primary" style="padding:5px 12px; margin:5px;" onclick="showDocViewer('${u.id}', '${u.name}')">📄 View Documents</button>
+              <button class="btn btn-warning" style="padding:5px 12px; margin:5px;" onclick="showProfileModal('${u.id}')">👤 View Profile</button>
+            </div>`;
+          });
+        }
+        document.getElementById("studentsList").innerHTML = html;
+      });
+    }
+    search.addEventListener("input", render);
+    render();
+  }
+
+  window.promptApprove = (userId, userName) => {
+    showConfirmModal(
+      "Approve Application",
+      `<p>Are you sure you want to <strong style="color:#10b981;">APPROVE</strong> the application of <strong>${userName}</strong>?</p>
+       <p style="margin-top: 10px;">The student will receive a notification and their status will be updated to "Approved".</p>`,
+      () => updateStatus(userId, "approved", userName)
+    );
+  };
+  
+  window.promptReject = (userId, userName) => {
+    showConfirmModal(
+      "Reject Application",
+      `<p>Are you sure you want to <strong style="color:#dc2626;">REJECT</strong> the application of <strong>${userName}</strong>?</p>
+       <p style="margin-top: 10px;">The student will receive a notification and their status will be updated to "Rejected".</p>`,
+      () => updateStatus(userId, "rejected", userName)
+    );
+  };
+
+  async function updateStatus(userId, newStatus, userName) {
+    try {
+      await db.collection("users").doc(userId).update({ 
+        status: newStatus,
+        reviewedBy: auth.currentUser.email,
+        reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      await db.collection("statusLogs").add({
+        userId: userId,
+        newStatus: newStatus,
+        reviewedBy: auth.currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      await db.collection("notifications").add({
+        userId: userId,
+        title: `Application ${newStatus === "approved" ? "Approved" : "Rejected"}`,
+        body: `Your PWD registration has been ${newStatus}. ${newStatus === "rejected" ? "Please contact PWD office for re-submission." : "Welcome to SSU PWD Support! You can now access all services."}`,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        type: "status_update"
+      });
+      
+      // Show success message
+      const statusMsg = newStatus === "approved" ? "approved" : "rejected";
+      alert(`✅ ${userName}'s application has been ${statusMsg}! The student has been notified and removed from the pending list.`);
+      
+    } catch (error) {
+      alert("Error updating status: " + error.message);
+    }
+  }
+
+  window.viewDocuments = async (userId, userName) => { showDocViewer(userId, userName); };
+  window.viewProfile = async (userId) => { showProfileModal(userId); };
+  window.openReplyModal = (msgId, userId) => { showReplyModal(msgId, userId); };
+
+  function loadInquiries() {
+    db.collection("messages").orderBy("timestamp", "desc").onSnapshot(snap => {
+      let html = "";
+      snap.forEach(doc => {
+        const m = doc.data();
+        const date = m.timestamp?.toDate?.() || new Date();
+        html += `<div class="inquiry-item">
+          <strong>${m.sender} (${m.role})</strong>: ${m.text}<br>
+          <small>${date.toLocaleString()}</small><br>
+          <button class="btn" style="margin-top:8px; background:#0a4b7a; padding:5px 12px;" onclick="openReplyModal('${doc.id}','${m.userId}')">✏️ Reply</button>
+        </div>`;
+      });
+      document.getElementById("inquiriesList").innerHTML = html || "<em>No inquiries</em>";
+    });
+  }
+
+  document.getElementById("sendReplyBtn").onclick = () => { sendReply(); };
+
+  document.getElementById("sendAnnounceBtn").onclick = async () => {
+    const title = document.getElementById("announceTitle").value;
+    const body = document.getElementById("announceBody").value;
+    if (!title) return alert("Please enter title");
+    
+    await db.collection("notifications").add({
+      userId: "all",
+      title: title,
+      body: body,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      type: "announcement",
+      sentBy: auth.currentUser.email
+    });
+    
+    await db.collection("announcements").add({
+      title: title,
+      body: body,
+      sentBy: auth.currentUser.email,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    alert("Announcement sent to all students!");
+    document.getElementById("announceTitle").value = "";
+    document.getElementById("announceBody").value = "";
+  };
+
+  document.getElementById("exportReportBtn").onclick = async () => {
+    const snap = await db.collection("users").where("role", "==", "student").get();
+    let csv = [["Name","Course","Disability","Status","Email","Contact","Registration Date"]];
+    snap.forEach(d => {
+      const u = d.data();
+      csv.push([u.name, u.course, u.disability, u.status, u.email, u.contact, u.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"]);
+    });
+    const content = csv.map(row => row.join(",")).join("\n");
+    const blob = new Blob([content], {type: "text/csv"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `pwd_students_report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+  
+  document.getElementById("exportPendingBtn").onclick = async () => {
+    const snap = await db.collection("users").where("role", "==", "student").where("status", "==", "approved").get();
+    let csv = [["Name","Course","Disability","Email","Contact","Registration Date"]];
+    snap.forEach(d => {
+      const u = d.data();
+      csv.push([u.name, u.course, u.disability, u.email, u.contact, u.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"]);
+    });
+    const content = csv.map(row => row.join(",")).join("\n");
+    const blob = new Blob([content], {type: "text/csv"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `approved_applications_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
+  document.getElementById("logoutBtn").onclick = () => auth.signOut();
+  
+  const style = document.createElement('style');
+  style.textContent = `.loading-spinner { animation: spin 1s linear infinite; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
+  document.head.appendChild(style);
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDocViewer();
+      closeProfileModal();
+      closeConfirmModal();
+      closeReplyModal();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>SSU PWD Support System | Login</title>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Font Awesome 6 (Free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, rgba(255,255,255,0.88), rgba(173,216,230,0.75), rgba(255,235,59,0.4)), 
+                  url('https://wxyzofficial.sirv.com/USC-Election/ssu-view.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 32px;
+      padding: 2rem 2rem 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(2px);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .logo-section {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+
+    .logo-section img {
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .logo-section h1 {
+      font-size: 1.8rem;
+      margin-top: 0.8rem;
+      background: linear-gradient(135deg, #0a4b7a, #f9b81b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo-section p {
+      color: #4a5568;
+      font-size: 0.9rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+
+    .input-group .input-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aec0;
+      font-size: 1rem;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 18px 14px 48px;
+      border: 2px solid #e2e8f0;
+      border-radius: 48px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      background: #fefefe;
+      position: relative;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #f9b81b;
+      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+    }
+
+    input.input-error {
+      border-color: #e53e3e;
+      background: #fff5f5;
+    }
+
+    input.input-valid {
+      border-color: #10b981;
+      background: #f0fff4;
+    }
+
+    .phone-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .phone-prefix {
+      position: absolute;
+      left: 48px;
+      color: #4a5568;
+      font-weight: 600;
+      font-size: 0.95rem;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .phone-input-wrapper input {
+      padding-left: 85px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 48px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0a4b7a, #1e6a9f);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(10,75,122,0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(16,185,129,0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #0a4b7a;
+      color: #0a4b7a;
+    }
+
+    .btn-outline:hover {
+      background: #0a4b7a;
+      color: white;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 45%;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .link-text {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .link-text a {
+      color: #0a4b7a;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .link-text a:hover {
+      text-decoration: underline;
+    }
+
+    .forgot-link {
+      text-align: right;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .forgot-link a {
+      color: #0a4b7a;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .forgot-link a:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 24px;
+      margin-bottom: 1rem;
+      text-align: center;
+      animation: slideIn 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .alert-error {
+      background: #fed7d7;
+      color: #c53030;
+      border-left: 4px solid #c53030;
+    }
+
+    .alert-success {
+      background: #c6f6d5;
+      color: #22543d;
+      border-left: 4px solid #22543d;
+    }
+
+    .alert-info {
+      background: #bee3f8;
+      color: #2c5282;
+      border-left: 4px solid #2c5282;
+    }
+
+    .alert-warning {
+      background: #feebc8;
+      color: #c05621;
+      border-left: 4px solid #c05621;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #0a4b7a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 32px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      animation: slideUp 0.3s ease;
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      color: #0a4b7a;
+      font-size: 1.3rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #4a5568;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #c53030;
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem 1.5rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 24px;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      border-color: #f9b81b;
+    }
+
+    .field-helper {
+      font-size: 0.75rem;
+      color: #718096;
+      margin-top: 4px;
+      padding-left: 16px;
+    }
+
+    .field-helper.error {
+      color: #e53e3e;
+    }
+
+    .field-helper.success {
+      color: #10b981;
+    }
+
+    .email-validation-status {
+      font-size: 0.8rem;
+      margin-top: 4px;
+      padding-left: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .email-validation-status .valid {
+      color: #10b981;
+    }
+
+    .email-validation-status .invalid {
+      color: #e53e3e;
+    }
+
+    .email-validation-status .checking {
+      color: #0a4b7a;
+    }
+
+    /* Verification Modal */
+    .verification-status {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .verification-status .icon-large {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .verification-status .icon-large.success {
+      color: #10b981;
+    }
+
+    .verification-status .icon-large.warning {
+      color: #f9b81b;
+    }
+
+    .verification-status .icon-large.error {
+      color: #dc2626;
+    }
+
+    .verification-status .icon-large.info {
+      color: #0a4b7a;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .card { padding: 1.5rem; }
+      .logo-section h1 { font-size: 1.4rem; }
+      input, select, .btn { padding: 12px 16px; }
+      .input-group .input-icon { left: 14px; font-size: 0.85rem; }
+      input, select { padding-left: 42px; }
+      .phone-prefix { left: 42px; font-size: 0.85rem; }
+      .phone-input-wrapper input { padding-left: 75px; }
+    }
+  </style>
+</head>
+<body>
+<div class="login-container">
+  <div class="card">
+    <div class="logo-section">
+      <img src="https://wxyzofficial.sirv.com/USC-Election/ssu.jpg" alt="SSU Logo">
+      <h1>PWD Support System</h1>
+      <p>Samar State University</p>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div id="loginAlert" class="alert hidden"></div>
+      <div class="input-group">
+        <i class="fas fa-envelope input-icon"></i>
+        <input type="email" id="loginEmail" placeholder="Email Address" autocomplete="email">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+      </div>
+      <div class="forgot-link">
+        <a href="#" id="forgotPasswordLink"><i class="fas fa-key"></i> Forgot Password?</a>
+      </div>
+      <button class="btn btn-primary" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      <div class="divider">or</div>
+      <div class="link-text">
+        Don't have an account? <a href="#" id="showSignup"><i class="fas fa-user-plus"></i> Register as PWD Student</a>
+      </div>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signupForm" class="hidden">
+      <div id="signupAlert" class="alert hidden"></div>
+      
+      <div class="input-group">
+        <i class="fas fa-user input-icon"></i>
+        <input type="text" id="signupName" placeholder="Full Name" required>
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-envelope input-icon"></i>
+        <input type="email" id="signupEmail" placeholder="Email Address" required>
+        <div id="emailValidationStatus" class="email-validation-status hidden">
+          <i class="fas fa-circle-check"></i>
+          <span id="emailValidationText">Valid email format</span>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-building input-icon"></i>
+        <select id="signupDepartment" required>
+          <option value="">Select Your Department *</option>
+          <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+          <option value="College of Education">College of Education</option>
+          <option value="College of Engineering">College of Engineering</option>
+          <option value="College of Nursing and Health Sciences">College of Nursing and Health Sciences</option>
+          <option value="College of Industrial Technology">College of Industrial Technology</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-phone input-icon"></i>
+        <div class="phone-input-wrapper">
+          <span class="phone-prefix">+63</span>
+          <input type="tel" id="signupPhone" placeholder="Phone Number (11 digits)" maxlength="10" required>
+        </div>
+        <div class="field-helper" id="phoneHelper">Enter your 11-digit mobile number (e.g., 9123456789)</div>
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" required>
+      </div>
+      
+      <button class="btn btn-primary" id="registerBtn"><i class="fas fa-user-plus"></i> Register Account</button>
+      <button class="btn btn-outline" id="backToLogin"><i class="fas fa-arrow-left"></i> Back to Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgotModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3><i class="fas fa-key"></i> Reset Password</h3>
+      <button class="modal-close" onclick="closeForgotModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p><i class="fas fa-info-circle" style="color: #0a4b7a;"></i> Enter your email address and we'll send you a password reset link.</p>
+      <input type="email" id="resetEmail" class="modal-input" placeholder="Enter your email address">
+      <div id="resetAlert" class="alert hidden" style="margin-top: 1rem;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeForgotModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" id="sendResetBtn"><i class="fas fa-paper-plane"></i> Send Reset Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- Email Verification Modal -->
+<div id="verifyModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3><i class="fas fa-envelope"></i> Verify Your Email</h3>
+      <button class="modal-close" onclick="closeVerifyModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="verifyContent" class="verification-status">
+        <div class="icon-large info"><i class="fas fa-envelope"></i></div>
+        <h4>Verification Email Sent</h4>
+        <p id="verifyMessage">Please check your email inbox and click the verification link.</p>
+        <div id="verifySpinner" style="margin-top: 15px;"><span class="loading-spinner"></span> Waiting for verification...</div>
+        <div id="verifyActions" style="margin-top: 20px;">
+          <button class="btn btn-outline" onclick="resendVerification()" style="margin-top: 5px;"><i class="fas fa-redo"></i> Resend Verification Email</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeVerifyModal()"><i class="fas fa-times"></i> Cancel</button>
+      <!-- <button class="btn btn-success" id="checkVerificationBtn"><i class="fas fa-check-circle"></i> I've Verified My Email</button> -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2Dk1HkuV-HT6Ew32BDYNmNmGDU6SMZiU",
+    authDomain: "pwd-websystem.firebaseapp.com",
+    projectId: "pwd-websystem",
+    storageBucket: "pwd-websystem.firebasestorage.app",
+    messagingSenderId: "249152340011",
+    appId: "1:249152340011:web:1dd994b57a0f878be46a6e",
+    measurementId: "G-8PTK4WH35R"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let pendingUserData = null;
+  let verificationCheckInterval = null;
+  let isPendingVerification = false;
+
+  // Helper: Show alert message
+  function showAlert(elementId, message, type = 'error') {
+    const alertElement = document.getElementById(elementId);
+    if (alertElement) {
+      alertElement.innerHTML = message;
+      alertElement.className = `alert alert-${type}`;
+      alertElement.classList.remove('hidden');
+      setTimeout(() => {
+        alertElement.classList.add('hidden');
+      }, 6000);
+    }
+  }
+
+  // Forgot Password Modal Functions
+  function showForgotModal() {
+    const modal = document.getElementById("forgotModal");
+    modal.classList.add("active");
+    document.getElementById("resetEmail").value = "";
+    const resetAlert = document.getElementById("resetAlert");
+    resetAlert.classList.add("hidden");
+  }
+
+  function closeForgotModal() {
+    const modal = document.getElementById("forgotModal");
+    modal.classList.remove("active");
+  }
+
+  // Verification Modal Functions
+  function showVerifyModal(email) {
+    const modal = document.getElementById("verifyModal");
+    document.getElementById("verifyMessage").textContent = `A verification email has been sent to ${email}. Please click the verification link in your email. If you don't see it, check your spam folder.`;
+    document.getElementById("verifySpinner").style.display = "block";
+    // document.getElementById("checkVerificationBtn").style.display = "block";
+    modal.classList.add("active");
+    isPendingVerification = true;
+  }
+
+  function closeVerifyModal() {
+    const modal = document.getElementById("verifyModal");
+    modal.classList.remove("active");
+    isPendingVerification = false;
+    if (verificationCheckInterval) {
+      clearInterval(verificationCheckInterval);
+      verificationCheckInterval = null;
+    }
+  }
+
+  // Validate Philippine Phone Number
+  function validatePhilippinePhone(phone) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    return cleanPhone.length === 10 && cleanPhone.startsWith('9');
+  }
+
+  // Validate email format
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  // Send verification email
+  async function sendVerificationEmail(user) {
+    try {
+      await user.sendEmailVerification();
+      return true;
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      return false;
+    }
+  }
+
+  // Check if email is verified
+  async function checkEmailVerified(user) {
+    try {
+      await user.reload();
+      return user.emailVerified;
+    } catch (error) {
+      console.error("Error checking verification status:", error);
+      return false;
+    }
+  }
+
+  // Resend verification
+  async function resendVerification() {
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await user.sendEmailVerification();
+        document.getElementById("verifyMessage").textContent = "Verification email resent! Please check your inbox. If you don't see it, check your spam folder.";
+        showAlert("signupAlert", '<i class="fas fa-check-circle"></i> Verification email resent! Please check your inbox. If you dont see it, check your spam folder.', "success");
+      } catch (error) {
+        document.getElementById("verifyMessage").textContent = "Error resending verification email. Please try again.";
+      }
+    }
+  }
+
+  // Check verification status
+  async function checkVerificationStatus() {
+    const user = auth.currentUser;
+    if (!user) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> No user found. Please try again.', "error");
+      return;
+    }
+
+    try {
+      await user.reload();
+      if (user.emailVerified) {
+        // Email is verified! Complete registration
+        document.getElementById("verifySpinner").innerHTML = '<i class="fas fa-check-circle" style="color: #10b981; font-size: 2rem;"></i><br>Email verified successfully!';
+        // document.getElementById("checkVerificationBtn").style.display = "none";
+        document.getElementById("verifyMessage").textContent = "Your email has been verified! Completing registration...";
+        
+        if (verificationCheckInterval) {
+          clearInterval(verificationCheckInterval);
+          verificationCheckInterval = null;
+        }
+        
+        // Complete registration
+        await completeRegistration();
+      } else {
+        document.getElementById("verifyMessage").textContent = "Email not yet verified. Please click the link in your email.";
+      }
+    } catch (error) {
+      console.error("Error checking verification:", error);
+    }
+  }
+
+  // Complete registration after email verification
+  async function completeRegistration() {
+    try {
+      const user = auth.currentUser;
+      const uid = user.uid;
+      
+      // Format phone number with +63 prefix
+      const formattedPhone = `+63${pendingUserData.phone}`;
+      
+      // Step 1: Save user data to Firestore
+      const userData = {
+        uid: uid,
+        name: pendingUserData.name,
+        email: pendingUserData.email,
+        department: pendingUserData.department,
+        phone: formattedPhone,
+        phoneRaw: pendingUserData.phone,
+        role: "student",
+        status: "pending",
+        course: "",
+        disability: "",
+        contact: pendingUserData.phone,
+        medicalCert: "",
+        validId: "",
+        pwdIdCard: "",
+        schoolId: "",
+        emailVerified: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        authProvider: "email",
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      await db.collection("users").doc(uid).set(userData);
+      
+      // Step 2: Save registration record
+      await db.collection("registrations").doc(uid).set({
+        uid: uid,
+        name: pendingUserData.name,
+        email: pendingUserData.email,
+        department: pendingUserData.department,
+        phone: formattedPhone,
+        method: "email",
+        emailVerified: true,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      // Step 3: Create welcome notification
+      await db.collection("notifications").add({
+        userId: uid,
+        title: "Welcome to SSU PWD Support System",
+        body: `Welcome ${pendingUserData.name}! Your registration has been submitted. Please complete your profile by adding your course and disability type. Also upload your required documents for verification.`,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        type: "welcome",
+        read: false
+      });
+      
+      closeVerifyModal();
+      showAlert("signupAlert", '<i class="fas fa-check-circle"></i> Registration successful! Redirecting to your dashboard...', "success");
+      
+      pendingUserData = null;
+      isPendingVerification = false;
+      
+      setTimeout(() => {
+        window.location.href = "student.html";
+      }, 2000);
+      
+    } catch (error) {
+      console.error("Registration completion error:", error);
+      showAlert("signupAlert", `<i class="fas fa-exclamation-circle"></i> Error completing registration: ${error.message}`, "error");
+    }
+  }
+
+  // Check if user is already logged in - MODIFIED to prevent redirect during verification
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      // If user is pending verification, don't redirect
+      if (isPendingVerification) {
+        console.log("User pending verification, skipping redirect");
+        return;
+      }
+      
+      try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        const role = userDoc.exists ? userDoc.data().role : "student";
+        
+        // Check if email is verified before allowing access
+        await user.reload();
+        if (!user.emailVerified) {
+          // Email not verified, show verification modal
+          console.log("Email not verified, showing verification modal");
+          const email = user.email;
+          pendingUserData = {
+            name: user.displayName || "",
+            email: email,
+            department: "",
+            phone: ""
+          };
+          showVerifyModal(email);
+          return;
+        }
+        
+        if (role === "admin") window.location.href = "admin.html";
+        else if (role === "staff") window.location.href = "staff.html";
+        else if (role === "student") window.location.href = "student.html";
+        else window.location.href = "guest.html";
+      } catch (error) {
+        console.error("Error checking user role:", error);
+      }
+    }
+  });
+
+  // DOM Elements
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+  const showSignup = document.getElementById("showSignup");
+  const backToLogin = document.getElementById("backToLogin");
+  const loginBtn = document.getElementById("loginBtn");
+  const registerBtn = document.getElementById("registerBtn");
+  const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+  const sendResetBtn = document.getElementById("sendResetBtn");
+  // const checkVerificationBtn = document.getElementById("checkVerificationBtn");
+
+  // Show signup form
+  showSignup.onclick = (e) => {
+    e.preventDefault();
+    loginForm.classList.add("hidden");
+    signupForm.classList.remove("hidden");
+    const alert = document.getElementById("signupAlert");
+    if (alert) alert.classList.add("hidden");
+  };
+
+  // Back to login
+  backToLogin.onclick = () => {
+    signupForm.classList.add("hidden");
+    loginForm.classList.remove("hidden");
+    const alert = document.getElementById("loginAlert");
+    if (alert) alert.classList.add("hidden");
+  };
+
+  // Forgot Password
+  forgotPasswordLink.onclick = (e) => {
+    e.preventDefault();
+    showForgotModal();
+  };
+
+  sendResetBtn.onclick = () => {
+    sendPasswordReset();
+  };
+
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeForgotModal();
+      // Don't close verify modal on escape to prevent accidental closure
+    }
+  });
+
+  // Login functionality
+  loginBtn.onclick = async () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    
+    if (!email || !password) {
+      showAlert("loginAlert", '<i class="fas fa-exclamation-circle"></i> Please enter email and password');
+      return;
+    }
+    
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+    
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+    } catch (error) {
+      let errorMessage = "Login failed: ";
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage += "No account found with this email.";
+          break;
+        case 'auth/wrong-password':
+          errorMessage += "Incorrect password.";
+          break;
+        case 'auth/invalid-email':
+          errorMessage += "Invalid email format.";
+          break;
+        case 'auth/too-many-requests':
+          errorMessage += "Too many failed attempts. Please try again later.";
+          break;
+        default:
+          errorMessage += error.message;
+      }
+      showAlert("loginAlert", `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`);
+      loginBtn.disabled = false;
+      loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+    }
+  };
+
+  // Send password reset email
+  async function sendPasswordReset() {
+    const email = document.getElementById("resetEmail").value.trim();
+    const resetBtn = document.getElementById("sendResetBtn");
+    const resetAlert = document.getElementById("resetAlert");
+    
+    if (!email) {
+      resetAlert.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your email address.';
+      resetAlert.className = "alert alert-error";
+      resetAlert.classList.remove("hidden");
+      return;
+    }
+    
+    resetBtn.disabled = true;
+    resetBtn.innerHTML = '<span class="loading-spinner"></span> Sending...';
+    
+    try {
+      await auth.sendPasswordResetEmail(email);
+      resetAlert.innerHTML = '<i class="fas fa-check-circle"></i> Password reset email sent! Check your inbox.';
+      resetAlert.className = "alert alert-success";
+      resetAlert.classList.remove("hidden");
+      
+      setTimeout(() => {
+        closeForgotModal();
+        resetBtn.disabled = false;
+        resetBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Email';
+      }, 3000);
+      
+    } catch (error) {
+      let errorMessage = "";
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = "No account found with this email address.";
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "Invalid email format.";
+          break;
+        default:
+          errorMessage = error.message;
+      }
+      resetAlert.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`;
+      resetAlert.className = "alert alert-error";
+      resetAlert.classList.remove("hidden");
+      resetBtn.disabled = false;
+      resetBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Email';
+    }
+  }
+
+  // Phone number input validation
+  const phoneInput = document.getElementById("signupPhone");
+  const phoneHelper = document.getElementById("phoneHelper");
+
+  phoneInput.addEventListener('input', function(e) {
+    this.value = this.value.replace(/\D/g, '');
+    if (this.value.length > 10) {
+      this.value = this.value.slice(0, 10);
+    }
+    
+    if (this.value.length > 0) {
+      if (this.value.length === 10 && this.value.startsWith('9')) {
+        phoneHelper.className = 'field-helper success';
+        phoneHelper.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> Valid Philippine mobile number';
+        this.classList.add('input-valid');
+        this.classList.remove('input-error');
+      } else {
+        phoneHelper.className = 'field-helper error';
+        phoneHelper.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #e53e3e;"></i> Must be exactly 11 digits starting with 9';
+        this.classList.add('input-error');
+        this.classList.remove('input-valid');
+      }
+    } else {
+      phoneHelper.className = 'field-helper';
+      phoneHelper.textContent = 'Enter your 11-digit mobile number (e.g., 9123456789)';
+      this.classList.remove('input-error', 'input-valid');
+    }
+  });
+
+  // Email format validation (real-time)
+  const signupEmail = document.getElementById("signupEmail");
+  const emailValidationStatus = document.getElementById("emailValidationStatus");
+  const emailValidationText = document.getElementById("emailValidationText");
+
+  signupEmail.addEventListener('input', function() {
+    const email = this.value.trim();
+    
+    if (!email) {
+      emailValidationStatus.classList.add('hidden');
+      this.classList.remove('input-error', 'input-valid');
+      return;
+    }
+    
+    if (!isValidEmail(email)) {
+      emailValidationStatus.classList.remove('hidden');
+      emailValidationText.textContent = 'Invalid email format';
+      emailValidationText.className = 'invalid';
+      this.classList.add('input-error');
+      this.classList.remove('input-valid');
+    } else {
+      emailValidationStatus.classList.remove('hidden');
+      emailValidationText.textContent = 'Valid email format';
+      emailValidationText.className = 'valid';
+      this.classList.add('input-valid');
+      this.classList.remove('input-error');
+    }
+  });
+
+  // Check verification button
+  // checkVerificationBtn.onclick = async () => {
+  //   await checkVerificationStatus();
+  // };
+
+  // Registration functionality with EMAIL VERIFICATION
+  registerBtn.onclick = async () => {
+    const name = document.getElementById("signupName").value.trim();
+    const email = document.getElementById("signupEmail").value.trim();
+    const department = document.getElementById("signupDepartment").value;
+    const phone = document.getElementById("signupPhone").value.trim();
+    const password = document.getElementById("signupPassword").value;
+
+    // Validation
+    if (!name) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Please enter your full name');
+      return;
+    }
+    if (!email) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Please enter your email address');
+      return;
+    }
+    if (!isValidEmail(email)) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Please enter a valid email address');
+      return;
+    }
+    if (!department) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Please select your department');
+      return;
+    }
+    if (!phone) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Please enter your phone number');
+      return;
+    }
+    if (!password) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Please enter a password');
+      return;
+    }
+    
+    // Validate Philippine phone number
+    if (!validatePhilippinePhone(phone)) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Invalid phone number. Must be exactly 11 digits starting with 9 (e.g., 9123456789)');
+      return;
+    }
+    
+    if (password.length < 6) {
+      showAlert("signupAlert", '<i class="fas fa-exclamation-circle"></i> Password must be at least 6 characters');
+      return;
+    }
+
+    // Show loading state
+    registerBtn.disabled = true;
+    registerBtn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+    
+    try {
+      // Step 1: Create user in Firebase Auth
+      const userCred = await auth.createUserWithEmailAndPassword(email, password);
+      const user = userCred.user;
+      
+      // Step 2: Send verification email
+      const verificationSent = await sendVerificationEmail(user);
+      if (!verificationSent) {
+        throw new Error("Failed to send verification email. Please try again.");
+      }
+      
+      // Store pending user data
+      pendingUserData = {
+        name: name,
+        email: email,
+        department: department,
+        phone: phone
+      };
+      
+      // Show verification modal
+      showVerifyModal(email);
+      
+      // Start checking verification status periodically
+      if (verificationCheckInterval) {
+        clearInterval(verificationCheckInterval);
+      }
+      verificationCheckInterval = setInterval(async () => {
+        await checkVerificationStatus();
+      }, 5000);
+      
+      showAlert("signupAlert", '<i class="fas fa-info-circle"></i> Verification email sent! Please check your inbox.', "success");
+      
+      registerBtn.disabled = false;
+      registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register Account';
+      
+    } catch (error) {
+      console.error("Registration error:", error);
+      
+      let errorMessage = "";
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = "This email is already registered. Please login instead.";
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "Invalid email format.";
+          break;
+        case 'auth/weak-password':
+          errorMessage = "Password is too weak. Please use at least 6 characters.";
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = "Network error. Please check your internet connection.";
+          break;
+        default:
+          errorMessage = error.message || "Registration failed. Please try again.";
+      }
+      
+      showAlert("signupAlert", `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`);
+      registerBtn.disabled = false;
+      registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register Account';
+      
+      // Clean up: Delete the user if verification failed
+      try {
+        if (auth.currentUser) {
+          await auth.currentUser.delete();
+        }
+      } catch (deleteError) {
+        console.error("Error cleaning up user:", deleteError);
+      }
+    }
+  };
+
+  // Enter key support for login
+  const loginEmail = document.getElementById("loginEmail");
+  const loginPassword = document.getElementById("loginPassword");
+  
+  const handleLoginEnter = (e) => {
+    if (e.key === 'Enter') {
+      loginBtn.click();
+    }
+  };
+  
+  if (loginEmail) loginEmail.addEventListener('keypress', handleLoginEnter);
+  if (loginPassword) loginPassword.addEventListener('keypress', handleLoginEnter);
+  
+  // Enter key support for signup
+  const signupName = document.getElementById("signupName");
+  const signupDepartment = document.getElementById("signupDepartment");
+  const signupPhone = document.getElementById("signupPhone");
+  const signupPassword = document.getElementById("signupPassword");
+  
+  const handleSignupEnter = (e) => {
+    if (e.key === 'Enter') {
+      registerBtn.click();
+    }
+  };
+  
+  if (signupName) signupName.addEventListener('keypress', handleSignupEnter);
+  if (signupEmail) signupEmail.addEventListener('keypress', handleSignupEnter);
+  if (signupDepartment) signupDepartment.addEventListener('keypress', handleSignupEnter);
+  if (signupPhone) signupPhone.addEventListener('keypress', handleSignupEnter);
+  if (signupPassword) signupPassword.addEventListener('keypress', handleSignupEnter);
+  
+  // Enter key support for reset modal
+  const resetEmail = document.getElementById("resetEmail");
+  if (resetEmail) {
+    resetEmail.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendPasswordReset();
+      }
+    });
+  }
+  
+  console.log("Firebase initialized and ready");
+</script>
+</body>
+</html>

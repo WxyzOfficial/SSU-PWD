@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSU PWD | Admin Console</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Font Awesome 6 (Free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f0f7ff;
+    }
+
+    .admin-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Header Styles */
+    header {
+      background: white;
+      border-radius: 28px;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-area img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+    }
+
+    .logo-area h2 {
+      color: #0a4b7a;
+      font-size: 1.3rem;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-buttons .btn {
+      padding: 8px 18px;
+      font-size: 0.85rem;
+    }
+
+    .nav-buttons .btn.active-page {
+      background: #0a4b7a;
+      color: white;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.2rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #0a4b7a;
+    }
+
+    .stat-label {
+      color: #4a5568;
+      margin-top: 0.3rem;
+      font-size: 0.8rem;
+    }
+
+    /* Card Styles */
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .card h3 {
+      color: #0a4b7a;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 1.2rem;
+    }
+
+    /* Filter Bar Styles */
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: #f7fafc;
+      border-radius: 20px;
+      align-items: center;
+    }
+
+    .filter-bar .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .filter-bar .filter-group label {
+      font-weight: 600;
+      color: #0a4b7a;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .filter-bar .filter-group select,
+    .filter-bar .filter-group input {
+      padding: 8px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      background: white;
+      width: 100%;
+      transition: all 0.3s;
+    }
+
+    .filter-bar .filter-group select:focus,
+    .filter-bar .filter-group input:focus {
+      outline: none;
+      border-color: #f9b81b;
+      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+    }
+
+    .filter-bar .filter-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-bar .filter-actions .btn {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 48px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0a4b7a, #1e6a9f);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(10, 75, 122, 0.3);
+    }
+
+    .btn-warning {
+      background: #f9b81b;
+      color: #1e2a3e;
+    }
+
+    .btn-warning:hover {
+      background: #e5a800;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #0d9f6e;
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #0a4b7a;
+      color: #0a4b7a;
+    }
+
+    .btn-outline:hover {
+      background: #0a4b7a;
+      color: white;
+    }
+
+    .btn-outline-success {
+      background: transparent;
+      border: 2px solid #10b981;
+      color: #10b981;
+    }
+
+    .btn-outline-success:hover {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-purple {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    .btn-purple:hover {
+      background: #7c3aed;
+      transform: translateY(-2px);
+    }
+
+    .btn-gray {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-gray:hover {
+      background: #4b5563;
+      transform: translateY(-2px);
+    }
+
+    .btn-blue {
+      background: #1e40af;
+      color: white;
+    }
+
+    .btn-blue:hover {
+      background: #1e3a8a;
+      transform: translateY(-2px);
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .status-pending { background: #feebc8; color: #c05621; }
+    .status-approved { background: #c6f6d5; color: #276749; }
+    .status-rejected { background: #fed7d7; color: #c53030; }
+    .status-dropped { background: #e2e8f0; color: #6b7280; }
+    .status-graduated { background: #dbeafe; color: #1e40af; }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: #f7fafc;
+      color: #0a4b7a;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f7fafc;
+    }
+
+    tr.status-dropped-row td {
+      opacity: 0.6;
+      background: #f9fafb;
+    }
+
+    tr.status-graduated-row td {
+      opacity: 0.7;
+      background: #f0f7ff;
+    }
+
+    select {
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e0;
+      background: white;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    /* Document Status */
+    .doc-status {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .doc-uploaded {
+      background: #c6f6d5;
+      color: #276749;
+    }
+
+    .doc-missing {
+      background: #fed7d7;
+      color: #c53030;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: #4a5568;
+      font-size: 1.1rem;
+    }
+
+    .loading-spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #0a4b7a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 32px;
+      max-width: 90%;
+      width: auto;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease;
+    }
+
+    .modal-header {
+      padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      border-radius: 32px 32px 0 0;
+      z-index: 2;
+    }
+
+    .modal-header h3 {
+      color: #0a4b7a;
+      font-size: 1.2rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #4a5568;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #c53030;
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 1.2rem 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem 1.2rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      border-top: 1px solid #e2e8f0;
+      position: sticky;
+      bottom: 0;
+      background: white;
+      border-radius: 0 0 32px 32px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      border-color: #f9b81b;
+      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+    }
+
+    /* Custom Alert Styles */
+    .custom-alert-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .custom-alert-overlay.active {
+      display: flex;
+    }
+
+    .custom-alert-box {
+      background: white;
+      border-radius: 28px;
+      max-width: 400px;
+      width: 90%;
+      padding: 1.8rem 2rem 1.5rem;
+      animation: slideUp 0.3s ease;
+      text-align: center;
+    }
+
+    .custom-alert-box .alert-icon {
+      font-size: 3rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .custom-alert-box .alert-icon.success { color: #10b981; }
+    .custom-alert-box .alert-icon.error { color: #dc2626; }
+    .custom-alert-box .alert-icon.warning { color: #f9b81b; }
+    .custom-alert-box .alert-icon.info { color: #0a4b7a; }
+
+    .custom-alert-box .alert-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e2a3e;
+      margin-bottom: 0.5rem;
+    }
+
+    .custom-alert-box .alert-message {
+      color: #4a5568;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .custom-alert-box .alert-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .custom-alert-box .alert-buttons .btn {
+      min-width: 80px;
+      justify-content: center;
+    }
+
+    /* Document Viewer Styles */
+    .document-viewer .doc-section {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 20px;
+    }
+
+    .document-viewer .doc-section:last-child {
+      border-bottom: none;
+    }
+
+    .document-viewer .doc-title {
+      font-weight: bold;
+      color: #0a4b7a;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .document-viewer img, .document-viewer iframe {
+      max-width: 100%;
+      border-radius: 12px;
+    }
+
+    .no-doc {
+      color: #c53030;
+      font-style: italic;
+      padding: 10px;
+      background: #fed7d7;
+      border-radius: 12px;
+    }
+
+    /* Profile Viewer Styles */
+    .profile-viewer {
+      max-width: 550px;
+      min-width: 300px;
+    }
+
+    .profile-field {
+      margin-bottom: 15px;
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .profile-label {
+      font-weight: bold;
+      color: #0a4b7a;
+      width: 130px;
+      display: inline-block;
+    }
+
+    .profile-value {
+      color: #2d3748;
+    }
+
+    /* Action Buttons Row */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .action-row .btn {
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+
+    .action-row .btn i {
+      font-size: 0.7rem;
+    }
+
+    /* Status Quick Actions */
+    .status-quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-top: 2px;
+    }
+
+    .status-quick-actions .btn {
+      font-size: 0.6rem;
+      padding: 2px 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-container { padding: 1rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .card { padding: 1rem; }
+      th, td { padding: 6px; font-size: 0.75rem; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-bar .filter-group { min-width: unset; }
+      .nav-buttons { width: 100%; justify-content: flex-start; }
+      .profile-label { width: 100px; }
+      .action-row .btn { font-size: 0.55rem; padding: 2px 5px; }
+      .action-row .btn i { font-size: 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="admin-container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-area">
+      <img src="https://wxyzofficial.sirv.com/USC-Election/ssu.jpg" alt="SSU Logo">
+      <div>
+        <h2>SSU PWD Support System</h2>
+        <small>Administrator Console</small>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <span id="adminEmail" style="margin-right: 0.5rem; color: #4a5568; font-size: 0.85rem;"></span>
+      <button class="btn active-page" id="dashboardNavBtn"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+      <a href="enquiries.html" class="btn btn-outline-success"><i class="fas fa-envelope"></i> Inquiries & Messages</a>
+      <button id="logoutBtn" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </header>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card" onclick="showUserDetails('all')">
+      <div class="stat-number" id="totalUsers">0</div>
+      <div class="stat-label"><i class="fas fa-users"></i> Total Users</div>
+    </div>
+    <div class="stat-card" onclick="showUserDetails('student')">
+      <div class="stat-number" id="totalPWD">0</div>
+      <div class="stat-label"><i class="fas fa-user-graduate"></i> PWD Students</div>
+    </div>
+    <div class="stat-card" onclick="showUserDetails('pending')">
+      <div class="stat-number" id="pendingApps">0</div>
+      <div class="stat-label"><i class="fas fa-clock"></i> Pending</div>
+    </div>
+    <div class="stat-card" onclick="showUserDetails('staff')">
+      <div class="stat-number" id="staffCount">0</div>
+      <div class="stat-label"><i class="fas fa-user-tie"></i> Staff</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="totalMessages">0</div>
+      <div class="stat-label"><i class="fas fa-comment-dots"></i> Messages</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="totalNotifications">0</div>
+      <div class="stat-label"><i class="fas fa-bell"></i> Notifications</div>
+    </div>
+  </div>
+
+  <!-- User Management Section -->
+  <div class="card">
+    <h3><i class="fas fa-users-cog"></i> User Management</h3>
+    
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label><i class="fas fa-search"></i> Search:</label>
+        <input type="text" id="searchInput" placeholder="Search by name or email...">
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-filter"></i> Status:</label>
+        <select id="statusFilter">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="dropped">Dropped</option>
+          <option value="graduated">Graduated</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-building"></i> Department:</label>
+        <select id="departmentFilter">
+          <option value="all">All Departments</option>
+          <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+          <option value="College of Education">College of Education</option>
+          <option value="College of Engineering">College of Engineering</option>
+          <option value="College of Nursing and Health Sciences">College of Nursing and Health Sciences</option>
+          <option value="College of Industrial Technology">College of Industrial Technology</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-outline btn-sm" onclick="resetFilters()"><i class="fas fa-undo"></i> Reset</button>
+        <button class="btn btn-primary btn-sm" onclick="applyFilters()"><i class="fas fa-filter"></i> Apply</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th><i class="fas fa-user"></i> Name</th>
+            <th><i class="fas fa-envelope"></i> Email</th>
+            <th><i class="fas fa-building"></i> Department</th>
+            <th><i class="fas fa-user-tag"></i> Role</th>
+            <th><i class="fas fa-check-circle"></i> Status</th>
+            <th><i class="fas fa-file-alt"></i> Docs</th>
+            <th><i class="fas fa-calendar-alt"></i> Registered</th>
+            <th><i class="fas fa-cog"></i> Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody">
+          <tr><td colspan="8" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading users...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Staff Management Section -->
+  <div class="card">
+    <h3><i class="fas fa-user-plus"></i> Create New Staff Account</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+      <input type="text" id="staffName" placeholder="Full Name" style="padding: 10px; border-radius: 12px; border: 2px solid #e2e8f0;">
+      <input type="email" id="staffEmail" placeholder="Email Address" style="padding: 10px; border-radius: 12px; border: 2px solid #e2e8f0;">
+      <input type="password" id="staffPassword" placeholder="Temporary Password" style="padding: 10px; border-radius: 12px; border: 2px solid #e2e8f0;">
+      <button id="createStaffBtn" class="btn btn-success"><i class="fas fa-user-plus"></i> Create</button>
+    </div>
+  </div>
+
+  <!-- Reports & Data Management -->
+  <div class="card">
+    <h3><i class="fas fa-chart-bar"></i> Reports & Data Management</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
+      <button id="fullReportBtn" class="btn btn-primary"><i class="fas fa-file-export"></i> Full Report</button>
+      <button id="backupBtn" class="btn btn-warning"><i class="fas fa-database"></i> Backup</button>
+      <button id="activityLogBtn" class="btn btn-warning"><i class="fas fa-history"></i> Activity Log</button>
+      <button id="exportStudentsBtn" class="btn btn-primary"><i class="fas fa-user-graduate"></i> Students</button>
+      <button id="cleanupBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Cleanup</button>
+    </div>
+  </div>
+
+  <!-- System Settings -->
+  <div class="card">
+    <h3><i class="fas fa-cogs"></i> System Settings & Configuration</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
+      <button id="resetStatsBtn" class="btn btn-warning"><i class="fas fa-sync-alt"></i> Refresh Stats</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     MODALS
+========================================== -->
+
+<!-- Document Viewer Modal -->
+<div id="docViewerModal" class="modal-overlay">
+  <div class="modal-container document-viewer" style="max-width:800px;">
+    <div class="modal-header">
+      <h3 id="docViewerTitle"><i class="fas fa-file-alt"></i> Student Documents</h3>
+      <button class="modal-close" onclick="closeDocViewer()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="docViewerBody"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeDocViewer()"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Viewer Modal -->
+<div id="profileModal" class="modal-overlay">
+  <div class="modal-container profile-viewer" style="max-width:550px;">
+    <div class="modal-header">
+      <h3><i class="fas fa-id-card"></i> User Profile</h3>
+      <button class="modal-close" onclick="closeProfileModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="profileBody"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeProfileModal()"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 450px;">
+    <div class="modal-header">
+      <h3 id="confirmTitle"><i class="fas fa-exclamation-triangle"></i> Confirm</h3>
+      <button class="modal-close" onclick="closeConfirmModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="confirmBody">Are you sure?</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeConfirmModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" id="confirmActionBtn"><i class="fas fa-check"></i> Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="userModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header">
+      <h3><i class="fas fa-users"></i> User Details</h3>
+      <button class="modal-close" onclick="closeUserModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="userModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeUserModal()"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Update User Status Modal -->
+<div id="updateUserStatusModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 450px;">
+    <div class="modal-header">
+      <h3><i class="fas fa-user-edit"></i> Update User Status</h3>
+      <button class="modal-close" onclick="closeUpdateUserStatusModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>User</label>
+        <input type="text" id="updateStatusUser" class="modal-input" disabled>
+      </div>
+      <div class="form-group">
+        <label>New Status</label>
+        <select id="updateStatusSelect" class="modal-input">
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="dropped">Dropped</option>
+          <option value="graduated">Graduated</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Reason (Optional)</label>
+        <input type="text" id="updateStatusReason" class="modal-input" placeholder="e.g., Transferred to another school, Completed program...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeUpdateUserStatusModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" id="updateUserStatusBtn"><i class="fas fa-check"></i> Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Alert -->
+<div id="customAlert" class="custom-alert-overlay">
+  <div class="custom-alert-box">
+    <div class="alert-icon" id="alertIcon"><i class="fas fa-info-circle"></i></div>
+    <div class="alert-title" id="alertTitle">Alert</div>
+    <div class="alert-message" id="alertMessage">Message goes here</div>
+    <div class="alert-buttons" id="alertButtons">
+      <button class="btn btn-primary" onclick="closeCustomAlert()"><i class="fas fa-check"></i> OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2Dk1HkuV-HT6Ew32BDYNmNmGDU6SMZiU",
+    authDomain: "pwd-websystem.firebaseapp.com",
+    projectId: "pwd-websystem",
+    storageBucket: "pwd-websystem.firebasestorage.app",
+    messagingSenderId: "249152340011",
+    appId: "1:249152340011:web:1dd994b57a0f878be46a6e"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentAdmin = null;
+  let allUsersData = [];
+  let selectedUserId = null;
+  let selectedUserName = null;
+
+  // ==========================================
+  // CUSTOM ALERT
+  // ==========================================
+  function showCustomAlert(title, message, type = 'info', confirmText = 'OK', onConfirm = null) {
+    const overlay = document.getElementById('customAlert');
+    const icon = document.getElementById('alertIcon');
+    const titleEl = document.getElementById('alertTitle');
+    const msgEl = document.getElementById('alertMessage');
+    const buttons = document.getElementById('alertButtons');
+
+    icon.className = 'alert-icon ' + type;
+    const icons = {
+      success: 'fa-check-circle',
+      error: 'fa-times-circle',
+      warning: 'fa-exclamation-triangle',
+      info: 'fa-info-circle'
+    };
+    icon.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i>`;
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+
+    buttons.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = `btn btn-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'primary'}`;
+    btn.innerHTML = `<i class="fas fa-check"></i> ${confirmText}`;
+    btn.onclick = () => {
+      closeCustomAlert();
+      if (onConfirm) onConfirm();
+    };
+    buttons.appendChild(btn);
+
+    overlay.classList.add('active');
+  }
+
+  function showCustomConfirm(title, message, onConfirm, onCancel = null) {
+    const overlay = document.getElementById('customAlert');
+    const icon = document.getElementById('alertIcon');
+    const titleEl = document.getElementById('alertTitle');
+    const msgEl = document.getElementById('alertMessage');
+    const buttons = document.getElementById('alertButtons');
+
+    icon.className = 'alert-icon warning';
+    icon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+    titleEl.textContent = title;
+    msgEl.innerHTML = message;
+
+    buttons.innerHTML = '';
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-outline';
+    cancelBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
+    cancelBtn.onclick = () => {
+      closeCustomAlert();
+      if (onCancel) onCancel();
+    };
+    buttons.appendChild(cancelBtn);
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'btn btn-danger';
+    confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirm';
+    confirmBtn.onclick = () => {
+      closeCustomAlert();
+      if (onConfirm) onConfirm();
+    };
+    buttons.appendChild(confirmBtn);
+
+    overlay.classList.add('active');
+  }
+
+  function closeCustomAlert() {
+    document.getElementById('customAlert').classList.remove('active');
+  }
+
+  // ==========================================
+  // MODAL FUNCTIONS
+  // ==========================================
+  function showDocViewer(userId, userName) {
+    const modal = document.getElementById("docViewerModal");
+    const title = document.getElementById("docViewerTitle");
+    const body = document.getElementById("docViewerBody");
+    
+    title.innerHTML = `<i class="fas fa-file-alt"></i> Documents: ${userName || "Student"}`;
+    body.innerHTML = '<div style="text-align:center"><div class="loading-spinner"></div><p>Loading documents...</p></div>';
+    modal.classList.add('active');
+    
+    db.collection("users").doc(userId).get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        let html = '';
+        
+        const docFields = [
+          { key: 'formProof', icon: 'fa-check-square', label: 'Form Completion Proof' },
+          { key: 'medicalCert', icon: 'fa-file-medical', label: 'Medical Certificate' },
+          { key: 'pwdIdCard', icon: 'fa-id-card', label: 'PWD ID Card' },
+          { key: 'schoolId', icon: 'fa-school', label: 'School ID' }
+        ];
+        
+        docFields.forEach(field => {
+          const value = data[field.key];
+          html += `<div class="doc-section">
+            <div class="doc-title">
+              <i class="fas ${field.icon}" style="color:#0a4b7a;"></i> ${field.label}
+              ${value ? '<span style="color:#10b981;font-size:0.75rem;"><i class="fas fa-check-circle"></i> Uploaded</span>' : '<span style="color:#c53030;font-size:0.75rem;"><i class="fas fa-times-circle"></i> Not Uploaded</span>'}
+            </div>`;
+          if (value) {
+            if (value.includes('image')) {
+              html += `<img src="${value}" alt="${field.label}" style="max-width:100%; border-radius:12px; margin-top:10px;">`;
+            } else {
+              html += `<iframe src="${value}" style="width:100%; height:400px; border:none; border-radius:12px; margin-top:10px;"></iframe>`;
+            }
+            html += `<div style="margin-top:10px"><a href="${value}" download="${field.key}" class="btn btn-sm btn-primary" style="text-decoration:none;"><i class="fas fa-download"></i> Download</a></div>`;
+          } else {
+            html += `<div class="no-doc" style="padding:10px;background:#fed7d7;border-radius:12px;color:#c53030;"><i class="fas fa-times-circle"></i> No ${field.label} uploaded</div>`;
+          }
+          html += `</div>`;
+        });
+        
+        body.innerHTML = html;
+      } else {
+        body.innerHTML = '<div class="no-doc">User not found</div>';
+      }
+    }).catch(error => {
+      body.innerHTML = `<div class="no-doc">Error: ${error.message}</div>`;
+    });
+  }
+  
+  function closeDocViewer() { document.getElementById("docViewerModal").classList.remove('active'); }
+  
+  function showProfileModal(userId) {
+    const modal = document.getElementById("profileModal");
+    const body = document.getElementById("profileBody");
+    body.innerHTML = '<div style="text-align:center"><div class="loading-spinner"></div><p>Loading...</p></div>';
+    modal.classList.add('active');
+    
+    db.collection("users").doc(userId).get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        const statusText = data.status ? data.status.toUpperCase() : "PENDING";
+        
+        let html = `
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-user"></i> Name:</span> <span class="profile-value">${data.name || "N/A"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-envelope"></i> Email:</span> <span class="profile-value">${data.email || "N/A"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-building"></i> Department:</span> <span class="profile-value">${data.department || "N/A"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-user-tag"></i> Role:</span> <span class="profile-value">${data.role || "student"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-check-circle"></i> Status:</span> <span class="status-badge status-${data.status || 'pending'}">${statusText}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-book"></i> Course:</span> <span class="profile-value">${data.course || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-calendar-alt"></i> Year:</span> <span class="profile-value">${data.year || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-calendar-alt"></i> Academic Year:</span> <span class="profile-value">${data.academicYear || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-wheelchair"></i> Disability:</span> <span class="profile-value">${data.disability || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-phone"></i> Contact:</span> <span class="profile-value">${data.contact || data.phone || "Not set"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-file-alt"></i> Form Proof:</span> <span class="profile-value">${data.formProof ? '<span style="color:#10b981;">Uploaded</span>' : '<span style="color:#c53030;">Not uploaded</span>'}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-calendar-alt"></i> Registered:</span> <span class="profile-value">${data.createdAt?.toDate?.()?.toLocaleString() || "N/A"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-clock"></i> Last Active:</span> <span class="profile-value">${data.lastActive?.toDate?.()?.toLocaleString() || "Never"}</span></div>
+          <div class="profile-field"><span class="profile-label"><i class="fas fa-check-circle"></i> Email Verified:</span> <span class="profile-value">${data.emailVerified ? "Yes" : "No"}</span></div>
+          ${data.statusReason ? `<div class="profile-field"><span class="profile-label"><i class="fas fa-comment"></i> Status Reason:</span> <span class="profile-value">${data.statusReason}</span></div>` : ''}
+        `;
+        body.innerHTML = html;
+      } else {
+        body.innerHTML = '<div class="no-doc">User not found</div>';
+      }
+    }).catch(error => {
+      body.innerHTML = `<div class="no-doc">Error: ${error.message}</div>`;
+    });
+  }
+  
+  function closeProfileModal() { document.getElementById("profileModal").classList.remove('active'); }
+  
+  function showConfirmModal(title, message, onConfirm) {
+    showCustomConfirm(title, message, onConfirm);
+  }
+  
+  function closeConfirmModal() { document.getElementById("confirmModal").classList.remove('active'); }
+  
+  function showUserDetailsModal(title, content) {
+    document.getElementById("userModalBody").innerHTML = content;
+    document.getElementById("userModal").classList.add('active');
+  }
+  
+  function closeUserModal() { document.getElementById("userModal").classList.remove('active'); }
+
+  // ==========================================
+  // FILTER FUNCTIONS
+  // ==========================================
+  function applyFilters() { renderFilteredUsers(); }
+  function resetFilters() {
+    document.getElementById("searchInput").value = "";
+    document.getElementById("statusFilter").value = "all";
+    document.getElementById("departmentFilter").value = "all";
+    renderFilteredUsers();
+  }
+
+  function renderFilteredUsers() {
+    const searchTerm = document.getElementById("searchInput").value.toLowerCase().trim();
+    const statusFilter = document.getElementById("statusFilter").value;
+    const departmentFilter = document.getElementById("departmentFilter").value;
+
+    const tbody = document.getElementById("usersTableBody");
+    tbody.innerHTML = "";
+
+    let filtered = allUsersData.filter(user => {
+      if (searchTerm) {
+        const nameMatch = (user.name || "").toLowerCase().includes(searchTerm);
+        const emailMatch = (user.email || "").toLowerCase().includes(searchTerm);
+        if (!nameMatch && !emailMatch) return false;
+      }
+      if (statusFilter !== "all" && user.status !== statusFilter) return false;
+      if (departmentFilter !== "all" && user.department !== departmentFilter) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="no-results"><i class="fas fa-search"></i> No users found</td></tr>`;
+      return;
+    }
+
+    filtered.forEach(user => {
+      const row = tbody.insertRow();
+      const isStudent = user.role === "student";
+      
+      // Add special class for dropped/graduated rows
+      if (user.status === 'dropped') row.className = 'status-dropped-row';
+      else if (user.status === 'graduated') row.className = 'status-graduated-row';
+      
+      row.insertCell(0).innerHTML = `<i class="fas fa-user"></i> ${user.name || "—"}`;
+      row.insertCell(1).innerHTML = `<i class="fas fa-envelope"></i> ${user.email || "—"}`;
+      row.insertCell(2).innerHTML = `<i class="fas fa-building"></i> ${user.department || "—"}`;
+      row.insertCell(3).innerHTML = `
+        <select class="role-select" data-uid="${user.id}" onchange="promptRoleChange('${user.id}', this.value, '${user.role}')">
+          <option value="student" ${user.role === "student" ? "selected" : ""}>Student</option>
+          <option value="staff" ${user.role === "staff" ? "selected" : ""}>Staff</option>
+          <option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
+        </select>
+      `;
+      
+      const statusClass = user.status || "pending";
+      row.insertCell(4).innerHTML = `<span class="status-badge status-${statusClass}">${statusClass.toUpperCase()}</span>`;
+      
+      const hasDocs = [user.formProof, user.medicalCert, user.pwdIdCard, user.schoolId].filter(Boolean).length;
+      row.insertCell(5).innerHTML = hasDocs > 0 ? 
+        `<span class="doc-status doc-uploaded"><i class="fas fa-check-circle"></i> ${hasDocs}/4</span>` : 
+        `<span class="doc-status doc-missing"><i class="fas fa-times-circle"></i> None</span>`;
+      
+      row.insertCell(6).innerHTML = user.createdAt?.toDate?.()?.toLocaleDateString() || "N/A";
+      
+      // Actions with visible status update buttons
+      let actions = `
+        <div class="action-row">
+          <button class="btn btn-sm" style="background:#0a4b7a; color:white;" onclick="showProfileModal('${user.id}')" title="View Profile"><i class="fas fa-id-card"></i></button>
+          <button class="btn btn-sm" style="background:#10b981; color:white;" onclick="showDocViewer('${user.id}', '${user.name}')" title="View Documents"><i class="fas fa-file-alt"></i></button>
+      `;
+      
+      if (isStudent) {
+        actions += `
+          <button class="btn btn-sm btn-success" onclick="quickUpdateStatus('${user.id}', '${user.name || 'Student'}', 'approved')" title="Approve"><i class="fas fa-check"></i> Approve</button>
+          <button class="btn btn-sm btn-danger" onclick="quickUpdateStatus('${user.id}', '${user.name || 'Student'}', 'rejected')" title="Reject"><i class="fas fa-times"></i> Reject</button>
+          <button class="btn btn-sm btn-gray" onclick="quickUpdateStatus('${user.id}', '${user.name || 'Student'}', 'dropped')" title="Mark as Dropped"><i class="fas fa-user-slash"></i> Drop</button>
+          <button class="btn btn-sm btn-blue" onclick="quickUpdateStatus('${user.id}', '${user.name || 'Student'}', 'graduated')" title="Mark as Graduated"><i class="fas fa-graduation-cap"></i> Graduate</button>
+          <button class="btn btn-sm btn-purple" onclick="showUpdateUserStatusModal('${user.id}', '${user.name || 'Student'}', '${user.status || "pending"}')" title="Full Status Update"><i class="fas fa-user-edit"></i> Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="promptDeleteUser('${user.id}', '${user.name}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+        </div>
+        `;
+      }
+      
+      row.insertCell(7).innerHTML = actions;
+    });
+  }
+
+  // ==========================================
+  // QUICK STATUS UPDATE
+  // ==========================================
+  window.quickUpdateStatus = (userId, userName, newStatus) => {
+    const statusLabels = {
+      approved: 'Approved',
+      rejected: 'Rejected',
+      dropped: 'Dropped',
+      graduated: 'Graduated'
+    };
+    
+    const statusEmojis = {
+      approved: '✅',
+      rejected: '❌',
+      dropped: '📤',
+      graduated: '🎓'
+    };
+    
+    let message = `Are you sure you want to mark <strong>${userName}</strong> as <strong>${statusLabels[newStatus]}</strong>?`;
+    let title = `Mark as ${statusLabels[newStatus]}`;
+    
+    if (newStatus === 'dropped') {
+      message = `Are you sure you want to mark <strong>${userName}</strong> as <strong>DROPPED</strong>?<br><br><span style="color:#6b7280;font-size:0.9rem;">This means the student is no longer enrolled.</span>`;
+      title = 'Mark as Dropped';
+    } else if (newStatus === 'graduated') {
+      message = `Are you sure you want to mark <strong>${userName}</strong> as <strong>GRADUATED</strong>?<br><br><span style="color:#1e40af;font-size:0.9rem;">Congratulations to this student!</span>`;
+      title = 'Mark as Graduated';
+    } else if (newStatus === 'approved') {
+      message = `Are you sure you want to <strong>APPROVE</strong> <strong>${userName}</strong>'s application?`;
+      title = 'Approve User';
+    } else if (newStatus === 'rejected') {
+      message = `Are you sure you want to <strong>REJECT</strong> <strong>${userName}</strong>'s application?`;
+      title = 'Reject User';
+    }
+    
+    showCustomConfirm(
+      title,
+      message,
+      async () => {
+        try {
+          let reason = '';
+          if (newStatus === 'dropped') {
+            reason = prompt('Please enter a reason for dropping (optional):') || 'Dropped from program';
+          } else if (newStatus === 'graduated') {
+            reason = 'Graduated from program';
+          }
+          
+          await db.collection('users').doc(userId).update({
+            status: newStatus,
+            statusUpdatedBy: currentAdmin.email,
+            statusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            statusReason: reason || ''
+          });
+          
+          await db.collection('notifications').add({
+            userId: userId,
+            title: `Account Status Updated: ${statusLabels[newStatus]}`,
+            body: `Your account status has been updated to ${statusLabels[newStatus]}. ${reason ? 'Reason: ' + reason : ''}`,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            type: 'status_update'
+          });
+          
+          await db.collection('auditLogs').add({
+            action: 'status_update',
+            userId: userId,
+            newStatus: newStatus,
+            reason: reason,
+            performedBy: currentAdmin.email,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          showCustomAlert('Success', `${statusEmojis[newStatus]} ${userName} marked as ${statusLabels[newStatus]}!`, 'success');
+          await loadStats();
+        } catch (error) {
+          showCustomAlert('Error', 'Error updating status: ' + error.message, 'error');
+        }
+      }
+    );
+  };
+
+  // ==========================================
+  // AUTH CHECK
+  // ==========================================
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) { window.location.href = "index.html"; return; }
+
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    if (!userDoc.exists || userDoc.data().role !== "admin") {
+      showCustomAlert('Access Denied', 'Admin privileges required!', 'error');
+      await auth.signOut();
+      window.location.href = "index.html";
+      return;
+    }
+
+    currentAdmin = { uid: user.uid, email: user.email, ...userDoc.data() };
+    document.getElementById("adminEmail").innerText = user.email;
+    
+    await loadStats();
+    await loadAllUsers();
+    
+    await db.collection("auditLogs").add({
+      action: "admin_login",
+      adminId: user.uid,
+      adminEmail: user.email,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  });
+
+  // ==========================================
+  // LOAD DATA
+  // ==========================================
+  async function loadStats() {
+    const usersSnapshot = await db.collection("users").get();
+    const messagesSnapshot = await db.collection("messages").get();
+    const notificationsSnapshot = await db.collection("notifications").get();
+    
+    let total = 0, pwd = 0, pending = 0, staff = 0;
+    usersSnapshot.forEach(doc => {
+      const data = doc.data();
+      total++;
+      if (data.role === "student") pwd++;
+      if (data.role === "staff") staff++;
+      if (data.status === "pending") pending++;
+    });
+    
+    document.getElementById("totalUsers").innerText = total;
+    document.getElementById("totalPWD").innerText = pwd;
+    document.getElementById("pendingApps").innerText = pending;
+    document.getElementById("staffCount").innerText = staff;
+    document.getElementById("totalMessages").innerText = messagesSnapshot.size;
+    document.getElementById("totalNotifications").innerText = notificationsSnapshot.size;
+  }
+
+  function loadAllUsers() {
+    db.collection("users").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+      allUsersData = [];
+      snapshot.forEach(doc => { allUsersData.push({ id: doc.id, ...doc.data() }); });
+      renderFilteredUsers();
+    });
+  }
+
+  // ==========================================
+  // DELETE FUNCTIONS
+  // ==========================================
+  window.promptDeleteUser = (userId, userName) => {
+    showCustomConfirm(
+      "Delete User",
+      `Delete <strong>${userName}</strong>?<br><br><span style="color:#dc2626;"><i class="fas fa-exclamation-circle"></i> This cannot be undone! All data will be deleted.</span>`,
+      () => deleteUser(userId)
+    );
+  };
+
+  async function deleteUser(userId) {
+    try {
+      await db.collection("users").doc(userId).delete();
+      
+      const messages = await db.collection("messages").where("userId", "==", userId).get();
+      messages.forEach(async (doc) => { await db.collection("messages").doc(doc.id).delete(); });
+      
+      const notifications = await db.collection("notifications").where("userId", "==", userId).get();
+      notifications.forEach(async (doc) => { await db.collection("notifications").doc(doc.id).delete(); });
+      
+      await db.collection("auditLogs").add({
+        action: "user_deleted",
+        userId: userId,
+        performedBy: currentAdmin.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      showCustomAlert('Success', 'User deleted successfully!', 'success');
+      await loadStats();
+    } catch (error) {
+      showCustomAlert('Error', 'Error deleting user: ' + error.message, 'error');
+    }
+  }
+
+  // ==========================================
+  // UPDATE USER STATUS (Full Modal)
+  // ==========================================
+  function showUpdateUserStatusModal(userId, userName, currentStatus) {
+    selectedUserId = userId;
+    selectedUserName = userName;
+    document.getElementById("updateStatusUser").value = userName || "Student";
+    document.getElementById("updateStatusSelect").value = currentStatus || "pending";
+    document.getElementById("updateStatusReason").value = "";
+    document.getElementById("updateUserStatusModal").classList.add('active');
+  }
+  
+  function closeUpdateUserStatusModal() { document.getElementById("updateUserStatusModal").classList.remove('active'); }
+
+  document.getElementById("updateUserStatusBtn").onclick = async () => {
+    const newStatus = document.getElementById("updateStatusSelect").value;
+    const reason = document.getElementById("updateStatusReason").value.trim();
+    const userName = selectedUserName || "User";
+    
+    const statusLabels = {
+      pending: 'Pending',
+      approved: 'Approved',
+      rejected: 'Rejected',
+      dropped: 'Dropped',
+      graduated: 'Graduated'
+    };
+    
+    showCustomConfirm(
+      "Update User Status",
+      `Change status of <strong>${userName}</strong> to <strong>${statusLabels[newStatus]}</strong>?<br><br><span style="color:#718096;font-size:0.9rem;">The user will be notified of this change.</span>`,
+      async () => {
+        try {
+          await db.collection("users").doc(selectedUserId).update({
+            status: newStatus,
+            statusUpdatedBy: currentAdmin.email,
+            statusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            statusReason: reason || ''
+          });
+          
+          await db.collection("notifications").add({
+            userId: selectedUserId,
+            title: `Account Status Updated`,
+            body: `Your account status has been updated to: ${statusLabels[newStatus]}. ${reason ? 'Reason: ' + reason : ''}`,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            type: "status_update"
+          });
+          
+          await db.collection("auditLogs").add({
+            action: "user_status_update",
+            userId: selectedUserId,
+            newStatus: newStatus,
+            reason: reason,
+            performedBy: currentAdmin.email,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          showCustomAlert('Success', `User status updated to ${statusLabels[newStatus]}!`, 'success');
+          closeUpdateUserStatusModal();
+          await loadStats();
+        } catch (error) {
+          showCustomAlert('Error', 'Error updating status: ' + error.message, 'error');
+        }
+      }
+    );
+  };
+
+  // ==========================================
+  // ROLE CHANGE
+  // ==========================================
+  window.promptRoleChange = (userId, newRole, oldRole) => {
+    showCustomConfirm(
+      "Change User Role",
+      `Change role from <strong>${oldRole}</strong> to <strong>${newRole}</strong>?<br><br><span style="color:#718096;font-size:0.9rem;">This affects access permissions immediately.</span>`,
+      () => updateRole(userId, newRole)
+    );
+  };
+
+  async function updateRole(userId, newRole) {
+    try {
+      const userRef = db.collection("users").doc(userId);
+      const userDoc = await userRef.get();
+      const oldRole = userDoc.data().role;
+      
+      await userRef.update({
+        role: newRole,
+        roleUpdatedBy: currentAdmin.email,
+        roleUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      await db.collection("auditLogs").add({
+        action: "role_update",
+        userId: userId,
+        oldRole: oldRole,
+        newRole: newRole,
+        performedBy: currentAdmin.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      showCustomAlert('Success', `Role updated to ${newRole}!`, 'success');
+      await loadStats();
+    } catch (error) {
+      showCustomAlert('Error', 'Error: ' + error.message, 'error');
+    }
+  }
+
+  // ==========================================
+  // CREATE STAFF
+  // ==========================================
+  document.getElementById("createStaffBtn").onclick = async () => {
+    const name = document.getElementById("staffName").value;
+    const email = document.getElementById("staffEmail").value;
+    const password = document.getElementById("staffPassword").value;
+    
+    if (!name || !email || !password) {
+      showCustomAlert('Missing Fields', 'Please fill all fields', 'warning');
+      return;
+    }
+    if (password.length < 6) {
+      showCustomAlert('Invalid Password', 'Password must be at least 6 characters', 'warning');
+      return;
+    }
+    
+    try {
+      const userCred = await auth.createUserWithEmailAndPassword(email, password);
+      const uid = userCred.user.uid;
+      
+      await db.collection("users").doc(uid).set({
+        uid, name, email, role: "staff", status: "approved",
+        createdBy: currentAdmin.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      await db.collection("auditLogs").add({
+        action: "staff_created", staffId: uid, staffName: name,
+        staffEmail: email, createdBy: currentAdmin.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      showCustomAlert('Success', `Staff account created for ${name}!`, 'success');
+      document.getElementById("staffName").value = "";
+      document.getElementById("staffEmail").value = "";
+      document.getElementById("staffPassword").value = "";
+      await loadStats();
+    } catch (error) {
+      showCustomAlert('Error', 'Error: ' + error.message, 'error');
+    }
+  };
+
+  // ==========================================
+  // REPORTS & UTILITIES
+  // ==========================================
+  document.getElementById("fullReportBtn").onclick = async () => {
+    const snap = await db.collection("users").get();
+    let csv = [["UID","Name","Email","Department","Role","Status","Course","Year","Academic Year","Disability","Contact","Form Proof","Medical Cert","PWD ID","School ID","Registered","Status Reason"]];
+    snap.forEach(d => {
+      const u = d.data();
+      csv.push([d.id, u.name||"", u.email||"", u.department||"", u.role||"", u.status||"", u.course||"", u.year||"", u.academicYear||"", u.disability||"", u.contact||u.phone||"", u.formProof?"Yes":"No", u.medicalCert?"Yes":"No", u.pwdIdCard?"Yes":"No", u.schoolId?"Yes":"No", u.createdAt?.toDate?.()?.toLocaleString()||"", u.statusReason||""]);
+    });
+    const content = csv.map(r => r.join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `pwd_report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showCustomAlert('Success', 'Report exported!', 'success');
+  };
+
+  document.getElementById("backupBtn").onclick = async () => {
+    const collections = ["users","messages","notifications","inquiries","announcements","auditLogs"];
+    const backup = {};
+    for (const col of collections) {
+      const snap = await db.collection(col).get();
+      backup[col] = [];
+      snap.forEach(d => backup[col].push({ id: d.id, ...d.data() }));
+    }
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showCustomAlert('Success', 'Backup created!', 'success');
+  };
+
+  document.getElementById("activityLogBtn").onclick = async () => {
+    const snap = await db.collection("auditLogs").orderBy("timestamp","desc").limit(500).get();
+    let csv = [["Action","User ID","Details","Performed By","Timestamp"]];
+    snap.forEach(d => {
+      const log = d.data();
+      csv.push([log.action||"", log.userId||log.staffId||"", log.newRole||log.oldRole||log.message||log.reason||"", log.performedBy||log.createdBy||"", log.timestamp?.toDate?.()?.toLocaleString()||""]);
+    });
+    const content = csv.map(r => r.join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `activity_log_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showCustomAlert('Success', 'Activity log exported!', 'success');
+  };
+
+  document.getElementById("exportStudentsBtn").onclick = async () => {
+    const snap = await db.collection("users").where("role","==","student").get();
+    let csv = [["Name","Email","Department","Course","Year","Disability","Status","Contact","Status Reason"]];
+    snap.forEach(d => {
+      const s = d.data();
+      csv.push([s.name||"", s.email||"", s.department||"", s.course||"", s.year||"", s.disability||"", s.status||"", s.contact||s.phone||"", s.statusReason||""]);
+    });
+    const content = csv.map(r => r.join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `students_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    showCustomAlert('Success', 'Students exported!', 'success');
+  };
+
+  document.getElementById("cleanupBtn").onclick = () => {
+    showCustomConfirm(
+      "System Cleanup",
+      `<i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> Delete notifications older than 30 days?<br><br><span style="color:#718096;font-size:0.9rem;">This cannot be undone.</span>`,
+      async () => {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const old = await db.collection("notifications").where("timestamp","<",thirtyDaysAgo).get();
+        let count = 0;
+        for (const doc of old.docs) { await db.collection("notifications").doc(doc.id).delete(); count++; }
+        await db.collection("auditLogs").add({ action: "system_cleanup", deletedCount: count, performedBy: currentAdmin.email, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        showCustomAlert('Success', `Cleaned up ${count} old notifications!`, 'success');
+      }
+    );
+  };
+
+  document.getElementById("resetStatsBtn").onclick = async () => { await loadStats(); showCustomAlert('Success', 'Statistics refreshed!', 'success'); };
+
+  window.showUserDetails = async (type) => {
+    let query = db.collection("users");
+    if (type === "student") query = query.where("role","==","student");
+    else if (type === "staff") query = query.where("role","==","staff");
+    else if (type === "pending") query = query.where("status","==","pending");
+    const snap = await query.get();
+    let html = `<h4><i class="fas fa-users"></i> ${type.toUpperCase()} (${snap.size})</h4><ul style="margin-top:15px;">`;
+    snap.forEach(d => {
+      const user = d.data();
+      html += `<li style="padding:8px 0;border-bottom:1px solid #e2e8f0;"><i class="fas fa-user"></i> <strong>${user.name||user.email}</strong> - ${user.role||"student"} ${user.status ? `(${user.status})` : ""}${user.statusReason ? ` - ${user.statusReason}` : ""}</li>`;
+    });
+    html += `</ul>`;
+    showUserDetailsModal(`${type.toUpperCase()} Users`, html);
+  };
+
+  document.getElementById("logoutBtn").onclick = () => {
+    showCustomConfirm(
+      "Logout",
+      "Logout from admin panel?",
+      async () => {
+        await db.collection("auditLogs").add({ action: "admin_logout", adminId: currentAdmin?.uid, adminEmail: currentAdmin?.email, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await auth.signOut();
+        window.location.href = "index.html";
+      }
+    );
+  };
+
+  // Close modals on escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDocViewer(); closeProfileModal(); closeConfirmModal(); closeUserModal();
+      closeUpdateUserStatusModal(); closeCustomAlert();
+    }
+  });
+</script>
+</body>
+</html>

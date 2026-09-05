@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>SSU PWD | Student Dashboard</title>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      background: #f0f7ff;
+    }
+
+    body.high-contrast {
+      background: #000;
+      color: #ffeb3b;
+    }
+    body.high-contrast .card, body.high-contrast header {
+      background: #111;
+      border: 1px solid #ffeb3b;
+      color: #ffeb3b;
+    }
+
+    body.font-large {
+      font-size: 1.2rem;
+    }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    header {
+      background: white;
+      border-radius: 28px;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-area img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .access-tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .access-tools button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      background: #eef2ff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .access-tools button:hover {
+      background: #dbe4ff;
+      transform: translateY(-1px);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 48px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0a4b7a, #1e6a9f);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(10, 75, 122, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #0a4b7a;
+      color: #0a4b7a;
+    }
+
+    .btn-outline:hover {
+      background: #0a4b7a;
+      color: white;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      gap: 4px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.8rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin-bottom: 1.2rem;
+      color: #0a4b7a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .card h3 i {
+      color: #f9b81b;
+      font-size: 1.3rem;
+      width: 28px;
+      text-align: center;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .pending { background: #feebc8; color: #c05621; }
+    .approved { background: #c6f6d5; color: #276749; }
+    .rejected { background: #fed7d7; color: #c53030; }
+    .dropped { background: #e2e8f0; color: #6b7280; }
+    .graduated { background: #dbeafe; color: #1e40af; }
+
+    .notification-item {
+      background: #f7fafc;
+      border-left: 4px solid #f9b81b;
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-radius: 16px;
+      transition: background 0.2s;
+    }
+
+    .notification-item:hover {
+      background: #edf2f7;
+    }
+
+    .notification-item strong {
+      color: #1e2a3e;
+    }
+
+    .admin-message-item {
+      background: #f0fdf4;
+      border-left: 4px solid #10b981;
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-radius: 16px;
+      transition: background 0.2s;
+    }
+
+    .admin-message-item:hover {
+      background: #dcfce7;
+    }
+
+    .admin-message-item .admin-badge {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      padding: 1px 10px;
+      border-radius: 40px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .admin-message-item strong {
+      color: #1e2a3e;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 24px;
+      border: 2px solid #e2e8f0;
+      margin: 10px 0;
+      resize: vertical;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #f9b81b;
+      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+    }
+
+    .profile-info p {
+      margin: 8px 0;
+      padding: 6px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-bottom: 1px solid #f0f4f8;
+    }
+
+    .profile-info p:last-child {
+      border-bottom: none;
+    }
+
+    .profile-info .label {
+      font-weight: 500;
+      color: #4a5568;
+      min-width: 130px;
+    }
+
+    .profile-info .value {
+      color: #1e2a3e;
+      word-break: break-word;
+    }
+
+    .profile-info .disability-tag {
+      display: inline-block;
+      background: #eef2ff;
+      color: #0a4b7a;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin: 2px 4px 2px 0;
+    }
+
+    .document-item {
+      background: #f7fafc;
+      padding: 12px 16px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .document-item .doc-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .document-item .doc-name i {
+      color: #0a4b7a;
+      width: 20px;
+    }
+
+    .document-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Loading Spinner */
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid #0a4b7a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* QR Code Card */
+    .qr-card {
+      text-align: center;
+      padding: 1.5rem;
+      background: #fafcff;
+      border-radius: 20px;
+      border: 2px dashed #e2e8f0;
+      margin: 10px 0;
+    }
+
+    .qr-card img {
+      max-width: 180px;
+      border-radius: 12px;
+      margin: 10px auto;
+      display: block;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .qr-card .qr-label {
+      font-weight: 600;
+      color: #0a4b7a;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .qr-card .qr-sub {
+      font-size: 0.85rem;
+      color: #4a5568;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 32px;
+      max-width: 600px;
+      width: 92%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      animation: slideUp 0.3s ease;
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.8rem 0.5rem 1.8rem;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      border-radius: 32px 32px 0 0;
+      z-index: 2;
+    }
+
+    .modal-header h3 {
+      color: #0a4b7a;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #4a5568;
+      transition: all 0.2s;
+      padding: 0 8px;
+    }
+
+    .modal-close:hover {
+      color: #c53030;
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 1.5rem 1.8rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.8rem 1.5rem 1.8rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      border-top: 1px solid #e2e8f0;
+      position: sticky;
+      bottom: 0;
+      background: white;
+      border-radius: 0 0 32px 32px;
+    }
+
+    .modal-input, .modal-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 24px;
+      margin-top: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+
+    .modal-input:focus, .modal-select:focus {
+      outline: none;
+      border-color: #f9b81b;
+      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .form-group .helper-text {
+      font-size: 0.75rem;
+      color: #718096;
+      margin-top: 4px;
+    }
+
+    .disability-input-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .disability-tag-input {
+      display: inline-block;
+      background: #eef2ff;
+      color: #0a4b7a;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .disability-tag-input .remove-tag {
+      cursor: pointer;
+      color: #dc2626;
+      font-size: 0.8rem;
+    }
+
+    .disability-tag-input .remove-tag:hover {
+      color: #b91c1c;
+    }
+
+    .message-modal {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .message-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .message-success { color: #10b981; }
+    .message-error { color: #dc2626; }
+    .message-info { color: #0a4b7a; }
+    .message-warning { color: #f9b81b; }
+
+    .file-upload-area {
+      border: 2px dashed #e2e8f0;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #fafcff;
+      margin: 8px 0;
+    }
+
+    .file-upload-area:hover {
+      border-color: #0a4b7a;
+      background: #f0f7ff;
+    }
+
+    .file-upload-area i {
+      font-size: 2rem;
+      color: #0a4b7a;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .file-upload-area .file-name {
+      font-weight: 500;
+      color: #0a4b7a;
+      margin-top: 4px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container { padding: 1rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .modal-container { width: 95%; margin: 1rem; }
+      header { padding: 1rem; }
+      .profile-info .label { min-width: 90px; }
+      .qr-card img { max-width: 140px; }
+    }
+  </style>
+</head>
+<body>
+<div id="loadingScreen" class="loading-container">
+  <div class="loading-spinner"></div>
+  <p><i class="fas fa-spinner fa-spin"></i> Loading your dashboard...</p>
+</div>
+
+<div id="dashboardContent" style="display: none;">
+  <div class="dashboard-container">
+    <header>
+      <div class="logo-area">
+        <img src="https://wxyzofficial.sirv.com/USC-Election/ssu.jpg" alt="SSU">
+        <div>
+          <strong>PWD Student Portal</strong><br>
+          <small id="userNameDisplay">Loading...</small>
+        </div>
+      </div>
+      <div class="access-tools">
+        <button id="fontToggle"><i class="fas fa-text-height"></i> Font Size</button>
+        <button id="contrastToggle"><i class="fas fa-circle-half-stroke"></i> Contrast</button>
+        <button id="logoutBtn" class="btn-outline" style="padding: 8px 20px;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </header>
+
+    <div class="grid-2">
+      <!-- Profile Card -->
+      <div class="card">
+        <h3><i class="fas fa-id-card"></i> My Profile & Status</h3>
+        <div id="profileInfo" class="profile-info"></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;">
+          <button id="editProfileBtn" class="btn btn-primary" style="flex:1;"><i class="fas fa-edit"></i> Edit Profile</button>
+          <button id="updateStatusBtn" class="btn btn-outline" style="flex:1;"><i class="fas fa-sync-alt"></i> Check Status</button>
+        </div>
+      </div>
+
+      <!-- Google Form QR Code Card -->
+      <div class="card">
+        <h3><i class="fas fa-qrcode"></i> PWD Assessment Form</h3>
+        <div class="qr-card">
+          <div class="qr-label"><i class="fas fa-clipboard-list"></i> PWD Student Registration Form</div>
+          <img src="https://johnstevenwaraya.sirv.com/PWD/qr-code%20(1).png" alt="PWD Google Form QR Code">
+          <div class="qr-sub">
+            <i class="fas fa-phone"></i> Scan the QR code to access the form<br>
+            <small>Complete this form before uploading your documents</small>
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <button id="uploadFormProofBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-upload"></i> Upload Form Completion Proof</button>
+        </div>
+      </div>
+
+      <!-- Notifications Card -->
+      <div class="card">
+        <h3><i class="fas fa-bell"></i> Real-Time Notifications</h3>
+        <div id="notificationsList" style="max-height: 320px; overflow-y: auto;"></div>
+      </div>
+
+      <!-- Admin Messages Card (Read Only) -->
+      <div class="card">
+        <h3><i class="fas fa-inbox"></i> Messages from Admin</h3>
+        <div id="adminMessagesContainer" style="max-height: 350px; overflow-y: auto;">
+          <div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>
+        </div>
+      </div>
+
+      <!-- Send Inquiry Card -->
+      <div class="card">
+        <h3><i class="fas fa-question-circle"></i> Send Inquiry to Admin</h3>
+        <p style="color: #4a5568; font-size: 0.85rem; margin-bottom: 0.8rem;"><i class="fas fa-info-circle"></i> Send your questions or concerns to the admin. They will reply to you.</p>
+        <textarea id="inquiryMessage" rows="3" placeholder="Type your question or concern..."></textarea>
+        <button id="sendInquiryBtn" class="btn btn-primary" style="width:100%;"><i class="fas fa-paper-plane"></i> Send Inquiry</button>
+      </div>
+
+      <!-- Documents Card -->
+      <div class="card">
+        <h3><i class="fas fa-folder-open"></i> My Uploaded Documents</h3>
+        <div id="documentsArea"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+          <button id="uploadMedicalBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-file-medical"></i> Upload Medical Certificate</button>
+          <button id="uploadPWDIdBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-id-card"></i> Upload PWD ID Card</button>
+          <button id="uploadSchoolIdBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-school"></i> Upload School ID</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal System -->
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 id="modalTitle"><i class="fas fa-pen"></i> Modal Title</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      Modal content goes here
+    </div>
+    <div class="modal-footer" id="modalFooter">
+      <button class="btn btn-outline" onclick="closeModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" id="modalConfirmBtn"><i class="fas fa-check"></i> Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2Dk1HkuV-HT6Ew32BDYNmNmGDU6SMZiU",
+    authDomain: "pwd-websystem.firebaseapp.com",
+    projectId: "pwd-websystem",
+    storageBucket: "pwd-websystem.firebasestorage.app",
+    messagingSenderId: "249152340011",
+    appId: "1:249152340011:web:1dd994b57a0f878be46a6e"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentUserData = null;
+  let userDocRef = null;
+  let disabilityTags = [];
+
+  // Modal functions
+  function showModal(title, body, confirmText = "Confirm", cancelText = "Cancel", onConfirm = null, showCancel = true) {
+    const modal = document.getElementById("modalOverlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const modalFooter = document.getElementById("modalFooter");
+    
+    modalTitle.innerHTML = `<i class="fas fa-pen"></i> ${title}`;
+    modalBody.innerHTML = body;
+    
+    modalFooter.innerHTML = '';
+    
+    if (showCancel) {
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn btn-outline';
+      cancelBtn.innerHTML = `<i class="fas fa-times"></i> ${cancelText}`;
+      cancelBtn.onclick = () => closeModal();
+      modalFooter.appendChild(cancelBtn);
+    }
+    
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'btn btn-primary';
+    confirmBtn.innerHTML = `<i class="fas fa-check"></i> ${confirmText}`;
+    confirmBtn.onclick = () => {
+      if (onConfirm) onConfirm();
+      closeModal();
+    };
+    modalFooter.appendChild(confirmBtn);
+    
+    modal.classList.add('active');
+  }
+  
+  function showMessageDialog(title, message, type = 'info') {
+    let icon = '';
+    let iconClass = '';
+    
+    switch(type) {
+      case 'success':
+        icon = 'fa-circle-check';
+        iconClass = 'message-success';
+        break;
+      case 'error':
+        icon = 'fa-circle-xmark';
+        iconClass = 'message-error';
+        break;
+      case 'warning':
+        icon = 'fa-triangle-exclamation';
+        iconClass = 'message-warning';
+        break;
+      default:
+        icon = 'fa-circle-info';
+        iconClass = 'message-info';
+    }
+    
+    const body = `
+      <div class="message-modal">
+        <div class="message-icon ${iconClass}"><i class="fas ${icon}"></i></div>
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">${message}</p>
+      </div>
+    `;
+    
+    const modal = document.getElementById("modalOverlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const modalFooter = document.getElementById("modalFooter");
+    
+    modalTitle.innerHTML = `<i class="fas fa-envelope"></i> ${title}`;
+    modalBody.innerHTML = body;
+    modalFooter.innerHTML = '<button class="btn btn-primary" onclick="closeModal()"><i class="fas fa-check"></i> OK</button>';
+    
+    modal.classList.add('active');
+  }
+  
+  // Parse disability string to array
+  function parseDisabilities(disabilityStr) {
+    if (!disabilityStr) return [];
+    return disabilityStr.split(',').map(d => d.trim()).filter(d => d !== '');
+  }
+
+  // Render disability tags in modal
+  function renderDisabilityTags(containerId, tags) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = '';
+    tags.forEach((tag, index) => {
+      const tagEl = document.createElement('span');
+      tagEl.className = 'disability-tag-input';
+      tagEl.innerHTML = `
+        ${tag}
+        <span class="remove-tag" data-index="${index}"><i class="fas fa-times-circle"></i></span>
+      `;
+      container.appendChild(tagEl);
+    });
+
+    container.querySelectorAll('.remove-tag').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.dataset.index);
+        disabilityTags.splice(index, 1);
+        renderDisabilityTags('disabilityTagsContainer', disabilityTags);
+      });
+    });
+  }
+
+  // Add disability tag
+  function addDisabilityTag() {
+    const input = document.getElementById('disabilityInput');
+    const tag = input.value.trim();
+    if (tag && !disabilityTags.includes(tag)) {
+      disabilityTags.push(tag);
+      renderDisabilityTags('disabilityTagsContainer', disabilityTags);
+      input.value = '';
+    }
+    input.focus();
+  }
+
+  function showEditProfileModal() {
+    // Initialize disability tags from current user data
+    disabilityTags = parseDisabilities(currentUserData.disability || '');
+    
+    // Parse course and year
+    let course = currentUserData.course || '';
+    let year = currentUserData.year || '';
+    let academicYear = currentUserData.academicYear || '';
+    
+    // Try to extract year from course if stored combined
+    if (course && !year) {
+      const yearMatch = course.match(/\b(1st|2nd|3rd|4th|5th)\s*Year/i);
+      if (yearMatch) {
+        year = yearMatch[1] + ' Year';
+        course = course.replace(/\s*-\s*1st\s*Year|\s*-\s*2nd\s*Year|\s*-\s*3rd\s*Year|\s*-\s*4th\s*Year|\s*-\s*5th\s*Year/i, '').trim();
+      }
+    }
+
+    const body = `
+      <div class="form-group">
+        <label><i class="fas fa-user"></i> Full Name *</label>
+        <input type="text" id="editName" class="modal-input" value="${currentUserData.name || ''}" placeholder="Enter your full name">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-book"></i> Course / Program *</label>
+        <input type="text" id="editCourse" class="modal-input" value="${course}" placeholder="e.g., Bachelor of Science in Information Technology">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-graduation-cap"></i> Year Level *</label>
+        <select id="editYear" class="modal-select">
+          <option value="">Select Year Level</option>
+          <option value="1st Year" ${year === '1st Year' ? 'selected' : ''}>1st Year</option>
+          <option value="2nd Year" ${year === '2nd Year' ? 'selected' : ''}>2nd Year</option>
+          <option value="3rd Year" ${year === '3rd Year' ? 'selected' : ''}>3rd Year</option>
+          <option value="4th Year" ${year === '4th Year' ? 'selected' : ''}>4th Year</option>
+          <option value="5th Year" ${year === '5th Year' ? 'selected' : ''}>5th Year</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-calendar-alt"></i> Academic Year *</label>
+        <input type="text" id="editAcademicYear" class="modal-input" value="${academicYear || ''}" placeholder="e.g., 2024-2025">
+        <div class="helper-text"><i class="fas fa-info-circle"></i> Format: YYYY-YYYY (e.g., 2024-2025)</div>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-wheelchair"></i> Disability Type(s) *</label>
+        <div class="disability-input-wrapper">
+          <input type="text" id="disabilityInput" class="modal-input" style="flex:1; min-width:150px;" placeholder="Type disability and press Add">
+          <button type="button" class="btn btn-primary btn-sm" onclick="addDisabilityTag()" style="white-space:nowrap;"><i class="fas fa-plus"></i> Add</button>
+        </div>
+        <div class="helper-text"><i class="fas fa-info-circle"></i> Add multiple disabilities by typing and clicking "Add"</div>
+        <div id="disabilityTagsContainer" class="disability-input-wrapper" style="margin-top:8px;"></div>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-phone"></i> Contact Number *</label>
+        <input type="tel" id="editContact" class="modal-input" value="${currentUserData.contact || ''}" placeholder="Enter your contact number">
+      </div>
+    `;
+    
+    showModal("Edit Profile", body, "Save Changes", "Cancel", async () => {
+      const newName = document.getElementById("editName").value.trim();
+      const newCourse = document.getElementById("editCourse").value.trim();
+      const newYear = document.getElementById("editYear").value;
+      const newAcademicYear = document.getElementById("editAcademicYear").value.trim();
+      const newContact = document.getElementById("editContact").value.trim();
+      
+      // Combine course and year
+      const fullCourse = newYear ? `${newCourse} - ${newYear}` : newCourse;
+      
+      // Get disabilities
+      const disabilities = disabilityTags.join(', ');
+      
+      // Validation
+      if (!newName) {
+        showMessageDialog("Validation Error", "Name cannot be empty.", "error");
+        return;
+      }
+      if (!newCourse) {
+        showMessageDialog("Validation Error", "Course cannot be empty.", "error");
+        return;
+      }
+      if (!newYear) {
+        showMessageDialog("Validation Error", "Please select your year level.", "error");
+        return;
+      }
+      if (!newAcademicYear) {
+        showMessageDialog("Validation Error", "Please enter the academic year.", "error");
+        return;
+      }
+      if (disabilityTags.length === 0) {
+        showMessageDialog("Validation Error", "Please add at least one disability type.", "error");
+        return;
+      }
+      if (!newContact) {
+        showMessageDialog("Validation Error", "Contact number cannot be empty.", "error");
+        return;
+      }
+      
+      try {
+        // Update Firestore
+        const updateData = {
+          name: newName,
+          course: fullCourse,
+          year: newYear,
+          academicYear: newAcademicYear,
+          disability: disabilities,
+          disabilityList: disabilityTags,
+          contact: newContact,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        console.log("Updating profile with data:", updateData);
+        
+        await db.collection("users").doc(auth.currentUser.uid).update(updateData);
+        
+        // Verify the update by fetching the document
+        const updatedDoc = await db.collection("users").doc(auth.currentUser.uid).get();
+        console.log("Updated user data:", updatedDoc.data());
+        
+        // Update local data
+        currentUserData.name = newName;
+        currentUserData.course = fullCourse;
+        currentUserData.year = newYear;
+        currentUserData.academicYear = newAcademicYear;
+        currentUserData.disability = disabilities;
+        currentUserData.disabilityList = disabilityTags;
+        currentUserData.contact = newContact;
+        
+        loadProfile();
+        document.getElementById("userNameDisplay").innerText = newName;
+        showMessageDialog("Profile Updated", "Your profile has been updated successfully!", "success");
+      } catch (error) {
+        console.error("Profile update error:", error);
+        showMessageDialog("Error", "Failed to update profile: " + error.message, "error");
+      }
+    });
+    
+    // Render disability tags after modal is shown
+    setTimeout(() => {
+      renderDisabilityTags('disabilityTagsContainer', disabilityTags);
+      // Add enter key support for disability input
+      const input = document.getElementById('disabilityInput');
+      if (input) {
+        input.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            addDisabilityTag();
+          }
+        });
+      }
+    }, 100);
+  }
+
+  // Make addDisabilityTag available globally for onclick
+  window.addDisabilityTag = addDisabilityTag;
+  
+  function showUploadDocumentModal(title, fieldName, acceptTypes = "image/*,application/pdf") {
+    const body = `
+      <div class="form-group">
+        <label><i class="fas fa-file"></i> Upload ${title}</label>
+        <div class="file-upload-area" id="fileDropArea">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <div>Click to select or drag and drop</div>
+          <div class="file-name" id="selectedFileName">No file selected</div>
+          <input type="file" id="docFileInput" accept="${acceptTypes}" style="display:none;">
+        </div>
+        <div class="helper-text"><i class="fas fa-info-circle"></i> Max file size: 20MB (PDF or Image)</div>
+        ${currentUserData[fieldName] ? `<div style="margin-top: 10px; color: #10b981;"><i class="fas fa-check-circle"></i> Current file exists. Uploading will replace it.</div>` : ''}
+      </div>
+    `;
+    
+    showModal(`Upload ${title}`, body, "Upload", "Cancel", async () => {
+      const fileInput = document.getElementById("docFileInput");
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        showMessageDialog("No File Selected", `Please select a file to upload as your ${title}.`, "warning");
+        return;
+      }
+      
+      if (file.size > 20 * 1024 * 1024) {
+        showMessageDialog("File Too Large", "File size exceeds 20MB limit.", "error");
+        return;
+      }
+      
+      showModal("Processing", "<div style='text-align:center'><div class='loading-spinner' style='width:30px;height:30px;margin:20px auto;'></div><p><i class='fas fa-spinner fa-spin'></i> Converting and uploading file...</p></div>", "", "", null, false);
+      
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        try {
+          const updateData = {};
+          updateData[fieldName] = ev.target.result;
+          updateData[`${fieldName}_updated`] = firebase.firestore.FieldValue.serverTimestamp();
+          
+          await db.collection("users").doc(auth.currentUser.uid).update(updateData);
+          currentUserData[fieldName] = ev.target.result;
+          
+          closeModal();
+          showMessageDialog("Upload Successful", `Your ${title} has been uploaded and saved to Firestore!`, "success");
+          loadDocuments();
+        } catch (error) {
+          closeModal();
+          showMessageDialog("Upload Failed", "Error saving to database: " + error.message, "error");
+        }
+      };
+      reader.onerror = () => {
+        closeModal();
+        showMessageDialog("Upload Failed", "Error processing the file. Please try again.", "error");
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Setup file upload drag and drop
+  function setupFileUpload() {
+    const dropArea = document.getElementById('fileDropArea');
+    const fileInput = document.getElementById('docFileInput');
+    const fileName = document.getElementById('selectedFileName');
+    
+    if (dropArea && fileInput) {
+      dropArea.addEventListener('click', () => fileInput.click());
+      
+      dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = '#0a4b7a';
+        dropArea.style.background = '#f0f7ff';
+      });
+      
+      dropArea.addEventListener('dragleave', () => {
+        dropArea.style.borderColor = '#e2e8f0';
+        dropArea.style.background = '#fafcff';
+      });
+      
+      dropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = '#e2e8f0';
+        dropArea.style.background = '#fafcff';
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          fileName.textContent = e.dataTransfer.files[0].name;
+        }
+      });
+      
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+          fileName.textContent = fileInput.files[0].name;
+        }
+      });
+    }
+  }
+  
+  function closeModal() {
+    const modal = document.getElementById("modalOverlay");
+    modal.classList.remove('active');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
+
+  function showLoading(show) {
+    const loadingScreen = document.getElementById("loadingScreen");
+    const dashboardContent = document.getElementById("dashboardContent");
+    if (show) {
+      loadingScreen.style.display = "flex";
+      dashboardContent.style.display = "none";
+    } else {
+      loadingScreen.style.display = "none";
+      dashboardContent.style.display = "block";
+    }
+  }
+
+  // Main auth check
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+    
+    try {
+      showLoading(true);
+      
+      userDocRef = db.collection("users").doc(user.uid);
+      const doc = await userDocRef.get();
+      
+      if (!doc.exists) {
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName || "",
+          role: "student",
+          status: "pending",
+          course: "",
+          year: "",
+          academicYear: "",
+          disability: "",
+          disabilityList: [],
+          contact: "",
+          medicalCert: "",
+          pwdIdCard: "",
+          schoolId: "",
+          formProof: "",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await userDocRef.set(userData);
+        currentUserData = userData;
+      } else {
+        currentUserData = { id: user.uid, ...doc.data() };
+        if (!currentUserData.disabilityList) {
+          currentUserData.disabilityList = parseDisabilities(currentUserData.disability || '');
+        }
+      }
+      
+      if (currentUserData.role === "admin") {
+        window.location.href = "admin.html";
+        return;
+      } else if (currentUserData.role === "staff") {
+        window.location.href = "staff.html";
+        return;
+      }
+      
+      document.getElementById("userNameDisplay").innerText = currentUserData.name || user.email;
+      
+      await userDocRef.update({
+        lastActive: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      loadProfile();
+      loadNotifications();
+      loadAdminMessages();
+      loadDocuments();
+      
+      showLoading(false);
+      
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      showMessageDialog("Error", "Failed to load your data: " + error.message, "error");
+      showLoading(false);
+    }
+  });
+
+  function loadProfile() {
+    const statusClass = currentUserData.status || "pending";
+    
+    // Format disability display
+    let disabilityDisplay = currentUserData.disability || "Not set";
+    if (currentUserData.disabilityList && currentUserData.disabilityList.length > 0) {
+      disabilityDisplay = currentUserData.disabilityList.map(d => 
+        `<span class="disability-tag">${d}</span>`
+      ).join(' ');
+    }
+    
+    // Display course with year
+    let courseDisplay = currentUserData.course || "Not set";
+    if (currentUserData.year) {
+      courseDisplay = `${courseDisplay} - ${currentUserData.year}`;
+    }
+    
+    document.getElementById("profileInfo").innerHTML = `
+      <p><span class="label"><i class="fas fa-user"></i> Name</span> <span class="value">${currentUserData.name || "N/A"}</span></p>
+      <p><span class="label"><i class="fas fa-book"></i> Course</span> <span class="value">${courseDisplay}</span></p>
+      <p><span class="label"><i class="fas fa-calendar-alt"></i> Academic Year</span> <span class="value">${currentUserData.academicYear || "Not set"}</span></p>
+      <p><span class="label"><i class="fas fa-wheelchair"></i> Disability</span> <span class="value">${disabilityDisplay}</span></p>
+      <p><span class="label"><i class="fas fa-phone"></i> Contact</span> <span class="value">${currentUserData.contact || "Not set"}</span></p>
+      <p><span class="label"><i class="fas fa-envelope"></i> Email</span> <span class="value">${currentUserData.email || ""}</span></p>
+      <p><span class="label"><i class="fas fa-check-circle"></i> Status</span> <span class="value"><span class="status-badge ${statusClass}">${statusClass.toUpperCase()}</span></span></p>
+      <p><span class="label"><i class="fas fa-calendar-alt"></i> Registered</span> <span class="value">${currentUserData.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"}</span></p>
+    `;
+  }
+
+  function loadNotifications() {
+    if (!auth.currentUser) return;
+    
+    db.collection("notifications")
+      .where("userId", "in", ["all", auth.currentUser.uid])
+      .orderBy("timestamp", "desc")
+      .limit(20)
+      .onSnapshot((snap) => {
+        let html = "";
+        snap.forEach(doc => {
+          const n = doc.data();
+          const date = n.timestamp?.toDate?.() || new Date();
+          html += `<div class="notification-item">
+            <strong><i class="fas fa-bullhorn"></i> ${n.title || "Notification"}</strong><br>
+            ${n.body || ""}<br>
+            <small><i class="fas fa-clock"></i> ${date.toLocaleString()}</small>
+          </div>`;
+        });
+        document.getElementById("notificationsList").innerHTML = html || "<em><i class='fas fa-info-circle'></i> No notifications</em>";
+      }, (error) => {
+        console.error("Notifications error:", error);
+      });
+  }
+
+  // Load messages from admin only
+  function loadAdminMessages() {
+    if (!auth.currentUser) return;
+    
+    const userId = auth.currentUser.uid;
+    
+    // Listen for admin messages (where role is admin)
+    db.collection("messages")
+      .where("userId", "==", userId)
+      .where("role", "==", "admin")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snap) => {
+        let html = "";
+        if (snap.empty) {
+          html = `<div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-inbox"></i> No messages from admin yet</div>`;
+        } else {
+          snap.forEach(doc => {
+            const msg = doc.data();
+            const date = msg.timestamp?.toDate?.() || new Date();
+            html += `<div class="admin-message-item">
+              <strong><i class="fas fa-user-shield" style="color:#10b981;"></i> Admin</strong> <span class="admin-badge">Staff</span>
+              ${msg.subject ? `<br><strong>${msg.subject}</strong>` : ''}
+              <br>${msg.text || msg.message || ''}
+              <br><small><i class="fas fa-clock"></i> ${date.toLocaleString()}</small>
+            </div>`;
+          });
+        }
+        document.getElementById("adminMessagesContainer").innerHTML = html;
+      }, (error) => {
+        console.error("Admin messages error:", error);
+      });
+  }
+
+  function loadDocuments() {
+    let html = "";
+    
+    // Form Proof
+    if (currentUserData.formProof && currentUserData.formProof !== "") {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-check-circle" style="color:#10b981;"></i> <strong>Form Completion Proof</strong></span>
+        <div class="document-buttons">
+          <a href="${currentUserData.formProof}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-exclamation-circle" style="color:#c53030;"></i> <strong>Form Completion Proof</strong></span>
+        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+      </div>`;
+    }
+    
+    // Medical Certificate
+    if (currentUserData.medicalCert && currentUserData.medicalCert !== "") {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-file-medical"></i> <strong>Medical Certificate</strong> ${currentUserData.medicalCert_updated ? `<small><i class="fas fa-clock"></i> ${currentUserData.medicalCert_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
+        <div class="document-buttons">
+          <a href="${currentUserData.medicalCert}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-file-medical"></i> <strong>Medical Certificate</strong></span>
+        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+      </div>`;
+    }
+    
+    // PWD ID Card
+    if (currentUserData.pwdIdCard && currentUserData.pwdIdCard !== "") {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-id-card"></i> <strong>PWD ID Card</strong> ${currentUserData.pwdIdCard_updated ? `<small><i class="fas fa-clock"></i> ${currentUserData.pwdIdCard_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
+        <div class="document-buttons">
+          <a href="${currentUserData.pwdIdCard}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-id-card"></i> <strong>PWD ID Card</strong></span>
+        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+      </div>`;
+    }
+    
+    // School ID
+    if (currentUserData.schoolId && currentUserData.schoolId !== "") {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-school"></i> <strong>School ID</strong> ${currentUserData.schoolId_updated ? `<small><i class="fas fa-clock"></i> ${currentUserData.schoolId_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
+        <div class="document-buttons">
+          <a href="${currentUserData.schoolId}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="document-item">
+        <span class="doc-name"><i class="fas fa-school"></i> <strong>School ID</strong></span>
+        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+      </div>`;
+    }
+    
+    document.getElementById("documentsArea").innerHTML = html;
+  }
+
+  // Send Inquiry
+  document.getElementById("sendInquiryBtn").onclick = async () => {
+    const msg = document.getElementById("inquiryMessage").value.trim();
+    if (!msg) {
+      showMessageDialog("Message Required", "Please type your message before sending.", "warning");
+      return;
+    }
+    
+    showModal("Send Inquiry", 
+      `<p>Are you sure you want to send this inquiry to admin?</p>
+       <p style="background: #f7fafc; padding: 12px; border-radius: 16px; margin-top: 10px;"><i class="fas fa-quote-left"></i> ${msg}</p>`,
+      "Send", "Cancel", async () => {
+        try {
+          // Save to inquiries collection (for admin dashboard)
+          await db.collection("inquiries").add({
+            userId: auth.currentUser.uid,
+            sender: currentUserData.name || "Student",
+            email: currentUserData.email || "",
+            message: msg,
+            status: "pending",
+            replies: [],
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          document.getElementById("inquiryMessage").value = "";
+          showMessageDialog("Inquiry Sent", "Your inquiry has been sent to admin. You will receive a reply soon.", "success");
+        } catch (error) {
+          showMessageDialog("Error", "Failed to send inquiry: " + error.message, "error");
+        }
+      });
+  };
+
+  // Edit Profile
+  document.getElementById("editProfileBtn").onclick = () => {
+    showEditProfileModal();
+  };
+
+  // Check Status
+  document.getElementById("updateStatusBtn").onclick = async () => {
+    try {
+      const doc = await db.collection("users").doc(auth.currentUser.uid).get();
+      const status = doc.data().status || "pending";
+      let statusMessage = "";
+      let statusColor = "";
+      
+      switch(status) {
+        case 'approved':
+          statusMessage = "Your application has been APPROVED! You can now access all PWD services.";
+          statusColor = "success";
+          break;
+        case 'rejected':
+          statusMessage = "Your application has been REJECTED. Please contact the PWD office for assistance.";
+          statusColor = "error";
+          break;
+        case 'dropped':
+          statusMessage = "Your account has been marked as DROPPED. Please contact the PWD office for assistance.";
+          statusColor = "warning";
+          break;
+        case 'graduated':
+          statusMessage = "Congratulations! Your account has been marked as GRADUATED. Thank you for being part of SSU PWD Support.";
+          statusColor = "success";
+          break;
+        default:
+          statusMessage = "Your application is PENDING review. Staff will review your documents and update your status soon.";
+          statusColor = "info";
+      }
+      
+      showMessageDialog(`Application Status: ${status.toUpperCase()}`, statusMessage, statusColor);
+    } catch (error) {
+      showMessageDialog("Error", "Failed to check status: " + error.message, "error");
+    }
+  };
+
+  // Upload Form Proof
+  document.getElementById("uploadFormProofBtn").onclick = () => {
+    showUploadDocumentModal("Form Completion Proof", "formProof", "image/*,application/pdf");
+  };
+
+  // Upload Documents
+  document.getElementById("uploadMedicalBtn").onclick = () => {
+    showUploadDocumentModal("Medical Certificate", "medicalCert");
+  };
+  
+  document.getElementById("uploadPWDIdBtn").onclick = () => {
+    showUploadDocumentModal("PWD ID Card", "pwdIdCard");
+  };
+  
+  document.getElementById("uploadSchoolIdBtn").onclick = () => {
+    showUploadDocumentModal("School ID", "schoolId");
+  };
+
+  // Logout
+  document.getElementById("logoutBtn").onclick = async () => {
+    showModal("Logout Confirmation", 
+      `<p>Are you sure you want to logout?</p>
+       <p style="color: #c53030; font-size: 0.9rem;"><i class="fas fa-exclamation-circle"></i> Any unsaved changes will be lost.</p>`,
+      "Logout", "Cancel", async () => {
+        try {
+          if (auth.currentUser) {
+            await db.collection("users").doc(auth.currentUser.uid).update({
+              lastLogout: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+          await auth.signOut();
+        } catch (error) {
+          console.error("Logout error:", error);
+          await auth.signOut();
+        }
+      });
+  };
+  
+  document.getElementById("fontToggle").onclick = () => document.body.classList.toggle("font-large");
+  document.getElementById("contrastToggle").onclick = () => document.body.classList.toggle("high-contrast");
+  
+  // Setup file upload for modal
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('#fileDropArea')) {
+      const fileInput = document.getElementById('docFileInput');
+      if (fileInput) fileInput.click();
+    }
+  });
+</script>
+</body>
+</html>
