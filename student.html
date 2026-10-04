@@ -13,594 +13,543 @@
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Google Fonts - Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    :root {
+      --primary: #0a4b7a;
+      --primary-light: #1e6a9f;
+      --primary-dark: #063558;
+      --accent: #f9b81b;
+      --accent-dark: #e5a800;
+      --success: #10b981;
+      --danger: #dc2626;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+      --shadow-xl: 0 20px 48px rgba(0,0,0,0.16);
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #f0f7ff;
+      font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e8f2ff 50%, #f5f8fc 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: var(--gray-800);
+      -webkit-font-smoothing: antialiased;
     }
 
-    body.high-contrast {
-      background: #000;
-      color: #ffeb3b;
-    }
-    body.high-contrast .card, body.high-contrast header {
-      background: #111;
-      border: 1px solid #ffeb3b;
-      color: #ffeb3b;
-    }
+    body.font-large { font-size: 1.15rem; }
 
-    body.font-large {
-      font-size: 1.2rem;
-    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
 
-    .dashboard-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 1.5rem;
-    }
+    .dashboard-container { max-width: 1440px; margin: 0 auto; padding: 1.5rem; }
 
+    /* HEADER */
     header {
-      background: white;
-      border-radius: 28px;
-      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      padding: 1.1rem 2rem;
       margin-bottom: 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      gap: 1rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      position: relative;
+      z-index: 100;
     }
 
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    .logo-area { display: flex; align-items: center; gap: 1rem; }
 
     .logo-area img {
-      width: 55px;
-      height: 55px;
-      border-radius: 50%;
-      object-fit: cover;
+      width: 52px; height: 52px; border-radius: 50%; object-fit: cover;
+      box-shadow: var(--shadow-sm); border: 2px solid white;
     }
 
-    .access-tools {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
+    .logo-area strong { color: var(--primary); font-size: 1.05rem; font-weight: 700; display: block; }
+    .logo-area small { color: var(--gray-500); font-size: 0.78rem; font-weight: 500; }
+
+    .access-tools { display: flex; gap: 8px; align-items: center; }
 
     .access-tools button {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 40px;
-      cursor: pointer;
-      background: #eef2ff;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
+      padding: 9px 16px; border: none; border-radius: 40px; cursor: pointer;
+      background: var(--gray-100); font-weight: 600; font-size: 0.82rem;
+      font-family: inherit; display: flex; align-items: center; gap: 6px;
+      transition: var(--transition); color: var(--gray-700);
     }
 
-    .access-tools button:hover {
-      background: #dbe4ff;
-      transform: translateY(-1px);
+    .access-tools button:hover { background: var(--gray-200); transform: translateY(-1px); color: var(--primary); }
+
+    .notif-btn {
+      position: relative;
+      background: linear-gradient(135deg, #eef4ff, #e0ecff) !important;
+      border-radius: 50% !important;
+      width: 42px; height: 42px; padding: 0 !important;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem; color: var(--primary) !important;
     }
 
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 48px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
+    .notif-btn:hover { background: linear-gradient(135deg, #dbe8ff, #c7dbff) !important; transform: scale(1.05) !important; }
+
+    .notif-badge {
+      position: absolute; top: -2px; right: -2px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white; font-size: 0.62rem; font-weight: 700;
+      padding: 3px 6px; border-radius: 40px; min-width: 19px;
+      text-align: center; border: 2px solid white;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+      animation: pulse 2s infinite;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #0a4b7a, #1e6a9f);
-      color: white;
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+    /* NOTIFICATION DROPDOWN */
+    .notif-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 2rem;
+      background: white; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl); width: 400px;
+      max-width: calc(100vw - 2rem); max-height: 70vh;
+      overflow-y: auto; display: none; z-index: 1000;
+      border: 1px solid var(--gray-200);
+      animation: slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(10, 75, 122, 0.3);
+    .notif-dropdown.active { display: block; }
+
+    .notif-dropdown-header {
+      padding: 1.1rem 1.3rem; border-bottom: 1px solid var(--gray-100);
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; background: white;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0; z-index: 2;
     }
 
-    .btn-outline {
-      background: transparent;
-      border: 2px solid #0a4b7a;
-      color: #0a4b7a;
+    .notif-dropdown-header h4 {
+      color: var(--primary); font-size: 1rem; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
     }
 
-    .btn-outline:hover {
-      background: #0a4b7a;
-      color: white;
-    }
+    .notif-dropdown-body { padding: 0.6rem; }
 
-    .btn-success {
-      background: #10b981;
-      color: white;
-    }
+    .notif-empty { text-align: center; padding: 2.5rem 1rem; color: var(--gray-400); font-size: 0.9rem; }
+    .notif-empty i { font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5; }
 
-    .btn-success:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
-    }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
-    .btn-danger {
-      background: #dc2626;
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #b91c1c;
-    }
-
-    .btn-sm {
-      padding: 5px 12px;
-      font-size: 0.75rem;
-      gap: 4px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 1.5rem;
-    }
+    /* CARDS */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; }
 
     .card {
-      background: white;
-      border-radius: 28px;
-      padding: 1.8rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid rgba(0,0,0,0.02);
+      background: white; border-radius: var(--radius-xl);
+      padding: 1.75rem; box-shadow: var(--shadow-sm);
+      transition: var(--transition); border: 1px solid var(--gray-100);
+      position: relative; overflow: hidden;
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-    }
+    .card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); border-color: var(--gray-200); }
 
     .card h3 {
-      margin-bottom: 1.2rem;
-      color: #0a4b7a;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.2rem;
-      font-weight: 600;
+      margin-bottom: 1.4rem; color: var(--primary);
+      display: flex; align-items: center; gap: 12px;
+      font-size: 1.15rem; font-weight: 700;
     }
 
     .card h3 i {
-      color: #f9b81b;
-      font-size: 1.3rem;
-      width: 28px;
-      text-align: center;
+      color: var(--accent); font-size: 1.2rem;
+      width: 36px; height: 36px; display: flex;
+      align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #fff8e1, #ffefc2);
+      border-radius: 12px; flex-shrink: 0;
     }
 
+    /* QUICK INQUIRY */
+    .card.quick-inquiry {
+      background: linear-gradient(135deg, #fffdf7 0%, #fffbf0 100%);
+      border: 1.5px solid rgba(249, 184, 27, 0.35);
+      box-shadow: 0 4px 20px rgba(249, 184, 27, 0.12);
+    }
+
+    .card.quick-inquiry:hover { box-shadow: 0 12px 32px rgba(249, 184, 27, 0.2); border-color: var(--accent); }
+    .card.quick-inquiry h3 i { background: linear-gradient(135deg, #fff3c4, #ffe89a); color: #d97706; }
+    .card.quick-inquiry h3 { color: #92400e; }
+
+    /* BUTTONS */
+    .btn {
+      padding: 11px 22px; border: none; border-radius: 48px; cursor: pointer;
+      font-weight: 600; transition: var(--transition);
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; font-size: 0.9rem; font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; box-shadow: 0 4px 12px rgba(10, 75, 122, 0.25);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(10, 75, 122, 0.35); }
+
+    .btn-outline { background: transparent; border: 1.5px solid var(--gray-300); color: var(--gray-700); }
+    .btn-outline:hover { background: var(--gray-50); border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+    .btn-sm { padding: 6px 14px; font-size: 0.78rem; gap: 5px; }
+
+    /* STATUS BADGES */
     .status-badge {
-      display: inline-block;
-      padding: 5px 14px;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.8rem;
+      display: inline-block; padding: 5px 14px; border-radius: 40px;
+      font-weight: 700; font-size: 0.72rem; letter-spacing: 0.03em; text-transform: uppercase;
     }
-    .pending { background: #feebc8; color: #c05621; }
-    .approved { background: #c6f6d5; color: #276749; }
-    .rejected { background: #fed7d7; color: #c53030; }
-    .dropped { background: #e2e8f0; color: #6b7280; }
-    .graduated { background: #dbeafe; color: #1e40af; }
+    .pending { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+    .approved { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+    .rejected { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; }
+    .dropped { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); color: #4b5563; }
+    .graduated { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e40af; }
 
+    /* NOTIFICATION & MESSAGE ITEMS */
     .notification-item {
-      background: #f7fafc;
-      border-left: 4px solid #f9b81b;
-      padding: 12px 16px;
-      margin: 10px 0;
-      border-radius: 16px;
-      transition: background 0.2s;
+      background: var(--gray-50); border-left: 3px solid var(--accent);
+      padding: 12px 16px; margin: 8px 0; border-radius: 14px;
+      transition: var(--transition); font-size: 0.88rem;
     }
 
-    .notification-item:hover {
-      background: #edf2f7;
-    }
-
-    .notification-item strong {
-      color: #1e2a3e;
-    }
+    .notification-item:hover { background: var(--gray-100); transform: translateX(3px); }
+    .notification-item strong { color: var(--gray-800); font-weight: 700; display: block; margin-bottom: 4px; }
 
     .admin-message-item {
-      background: #f0fdf4;
-      border-left: 4px solid #10b981;
-      padding: 12px 16px;
-      margin: 10px 0;
-      border-radius: 16px;
-      transition: background 0.2s;
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border-left: 3px solid var(--success);
+      padding: 14px 16px; margin: 8px 0; border-radius: 14px;
+      transition: var(--transition); font-size: 0.88rem;
     }
 
-    .admin-message-item:hover {
-      background: #dcfce7;
+    .admin-message-item:hover { transform: translateX(3px); box-shadow: var(--shadow-sm); }
+
+    .admin-badge {
+      display: inline-block; background: linear-gradient(135deg, var(--success), #059669);
+      color: white; padding: 2px 10px; border-radius: 40px;
+      font-size: 0.65rem; font-weight: 700; margin-left: 6px;
     }
 
-    .admin-message-item .admin-badge {
-      display: inline-block;
-      background: #10b981;
-      color: white;
-      padding: 1px 10px;
-      border-radius: 40px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      margin-left: 8px;
+    .admin-message-item strong { color: var(--gray-800); font-weight: 700; }
+
+    /* QUICK REQUEST CHIPS */
+    .quick-request-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+    .quick-request-buttons .chip {
+      padding: 8px 16px; border: 1.5px solid var(--gray-200);
+      border-radius: 40px; background: white; cursor: pointer;
+      font-size: 0.8rem; font-weight: 600; font-family: inherit;
+      color: var(--gray-600); transition: var(--transition);
+      display: inline-flex; align-items: center; gap: 6px;
     }
 
-    .admin-message-item strong {
-      color: #1e2a3e;
+    .quick-request-buttons .chip i { font-size: 0.75rem; color: var(--gray-400); transition: var(--transition); }
+
+    .quick-request-buttons .chip:hover {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-color: var(--primary); color: white;
+      transform: translateY(-2px); box-shadow: 0 4px 12px rgba(10, 75, 122, 0.25);
     }
 
+    .quick-request-buttons .chip:hover i { color: white; }
+
+    /* TEXTAREA */
     textarea {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 24px;
-      border: 2px solid #e2e8f0;
-      margin: 10px 0;
-      resize: vertical;
-      font-family: inherit;
-      transition: border 0.2s;
+      width: 100%; padding: 14px 18px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--gray-200); margin: 8px 0;
+      resize: vertical; font-family: inherit; font-size: 0.9rem;
+      transition: var(--transition); background: var(--gray-50);
+      color: var(--gray-800); line-height: 1.5;
     }
 
     textarea:focus {
-      outline: none;
-      border-color: #f9b81b;
-      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+      outline: none; border-color: var(--primary);
+      background: white; box-shadow: 0 0 0 4px rgba(10, 75, 122, 0.08);
     }
 
+    /* PROFILE INFO */
     .profile-info p {
-      margin: 8px 0;
-      padding: 6px 0;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      border-bottom: 1px solid #f0f4f8;
+      margin: 4px 0; padding: 10px 0;
+      display: flex; align-items: flex-start; gap: 12px;
+      border-bottom: 1px solid var(--gray-100); font-size: 0.88rem;
     }
 
-    .profile-info p:last-child {
-      border-bottom: none;
-    }
+    .profile-info p:last-child { border-bottom: none; }
 
     .profile-info .label {
-      font-weight: 500;
-      color: #4a5568;
-      min-width: 130px;
+      font-weight: 600; color: var(--gray-500); min-width: 120px;
+      font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;
     }
 
-    .profile-info .value {
-      color: #1e2a3e;
-      word-break: break-word;
-    }
+    .profile-info .value { color: var(--gray-800); word-break: break-word; font-weight: 500; }
+    .profile-info .label i { width: 16px; margin-right: 4px; color: var(--primary); }
 
     .profile-info .disability-tag {
-      display: inline-block;
-      background: #eef2ff;
-      color: #0a4b7a;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      margin: 2px 4px 2px 0;
+      display: inline-block; background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      color: var(--primary); padding: 4px 12px; border-radius: 40px;
+      font-size: 0.78rem; font-weight: 600; margin: 2px 4px 2px 0;
+      border: 1px solid rgba(10, 75, 122, 0.1);
     }
 
+    /* DOCUMENT ITEMS */
     .document-item {
-      background: #f7fafc;
-      padding: 12px 16px;
-      border-radius: 16px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
+      background: var(--gray-50); padding: 14px 16px;
+      border-radius: var(--radius-md); margin-bottom: 10px;
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 10px;
+      border: 1px solid var(--gray-100); transition: var(--transition);
     }
+
+    .document-item:hover { background: white; box-shadow: var(--shadow-sm); border-color: var(--gray-200); }
 
     .document-item .doc-name {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 600; font-size: 0.88rem; color: var(--gray-700);
     }
 
-    .document-item .doc-name i {
-      color: #0a4b7a;
-      width: 20px;
+    .document-item .doc-name i { color: var(--primary); width: 20px; text-align: center; font-size: 1rem; }
+    .document-buttons { display: flex; gap: 6px; }
+
+    /* UPLOAD TIMER */
+    .upload-timer {
+      display: none; align-items: center; gap: 8px;
+      padding: 10px 16px; background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      border-radius: 40px; font-size: 0.85rem; font-weight: 600;
+      color: var(--primary); margin-top: 10px;
+      border: 1px solid rgba(10, 75, 122, 0.1);
     }
 
-    .document-buttons {
-      display: flex;
-      gap: 8px;
+    .upload-timer.active { display: inline-flex; }
+    .upload-timer i { color: var(--accent); animation: pulse 1.5s infinite; }
+
+    .upload-timer .timer-value {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-weight: 700; font-size: 0.9rem; letter-spacing: 0.05em;
     }
 
-    /* Loading Spinner */
+    /* LOADING */
     .loading-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      flex-direction: column;
-      gap: 1rem;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; flex-direction: column; gap: 1.2rem;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e8f2ff 100%);
     }
 
     .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #e2e8f0;
-      border-top: 4px solid #0a4b7a;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+      width: 52px; height: 52px; border: 4px solid var(--gray-200);
+      border-top: 4px solid var(--primary); border-radius: 50%;
+      animation: spin 0.9s linear infinite;
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* QR Code Card */
-    .qr-card {
-      text-align: center;
-      padding: 1.5rem;
-      background: #fafcff;
-      border-radius: 20px;
-      border: 2px dashed #e2e8f0;
-      margin: 10px 0;
-    }
-
-    .qr-card img {
-      max-width: 180px;
-      border-radius: 12px;
-      margin: 10px auto;
-      display: block;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    .qr-card .qr-label {
-      font-weight: 600;
-      color: #0a4b7a;
-      margin-bottom: 8px;
-      font-size: 1rem;
-    }
-
-    .qr-card .qr-sub {
-      font-size: 0.85rem;
-      color: #4a5568;
-    }
-
-    /* Modal Styles */
+    /* MODAL */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      animation: fadeIn 0.3s ease;
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px); justify-content: center; align-items: center;
+      z-index: 2000; animation: fadeIn 0.25s ease; padding: 1rem;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal-container {
-      background: white;
-      border-radius: 32px;
-      max-width: 600px;
-      width: 92%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      animation: slideUp 0.3s ease;
+      background: white; border-radius: var(--radius-xl);
+      max-width: 620px; width: 100%; max-height: 90vh;
+      overflow-y: auto; box-shadow: var(--shadow-xl);
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .modal-header {
-      padding: 1.5rem 1.8rem 0.5rem 1.8rem;
-      border-bottom: 2px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      background: white;
-      border-radius: 32px 32px 0 0;
-      z-index: 2;
+      padding: 1.5rem 1.8rem 1rem 1.8rem;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; background: white;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0; z-index: 2;
     }
 
     .modal-header h3 {
-      color: #0a4b7a;
-      font-size: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      color: var(--primary); font-size: 1.15rem; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
     }
+
+    .modal-header h3 i { color: var(--accent); }
 
     .modal-close {
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      cursor: pointer;
-      color: #4a5568;
-      transition: all 0.2s;
-      padding: 0 8px;
+      background: var(--gray-100); border: none; width: 34px; height: 34px;
+      border-radius: 50%; cursor: pointer; color: var(--gray-500);
+      transition: var(--transition); display: flex;
+      align-items: center; justify-content: center; font-size: 1rem;
     }
 
-    .modal-close:hover {
-      color: #c53030;
-      transform: scale(1.1);
-    }
-
-    .modal-body {
-      padding: 1.5rem 1.8rem;
-    }
+    .modal-close:hover { background: #fee2e2; color: var(--danger); transform: rotate(90deg); }
+    .modal-body { padding: 1.5rem 1.8rem; }
 
     .modal-footer {
-      padding: 1rem 1.8rem 1.5rem 1.8rem;
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      border-top: 1px solid #e2e8f0;
-      position: sticky;
-      bottom: 0;
-      background: white;
-      border-radius: 0 0 32px 32px;
+      padding: 1.2rem 1.8rem 1.5rem 1.8rem; display: flex; gap: 10px;
+      justify-content: flex-end; border-top: 1px solid var(--gray-100);
+      position: sticky; bottom: 0; background: white;
+      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
     }
 
+    /* FORM ELEMENTS */
     .modal-input, .modal-select {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #e2e8f0;
-      border-radius: 24px;
-      margin-top: 6px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      transition: border 0.2s;
+      width: 100%; padding: 13px 16px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-md); margin-top: 6px;
+      font-size: 0.92rem; font-family: inherit;
+      transition: var(--transition); background: var(--gray-50);
+      color: var(--gray-800);
     }
 
     .modal-input:focus, .modal-select:focus {
-      outline: none;
-      border-color: #f9b81b;
-      box-shadow: 0 0 0 3px rgba(249,184,27,0.1);
+      outline: none; border-color: var(--primary);
+      background: white; box-shadow: 0 0 0 4px rgba(10, 75, 122, 0.08);
     }
 
-    .form-group {
-      margin-bottom: 1.2rem;
+    .modal-select {
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px;
     }
+
+    .form-group { margin-bottom: 1.3rem; }
 
     .form-group label {
-      display: block;
-      font-weight: 600;
-      color: #2d3748;
-      margin-bottom: 4px;
-      font-size: 0.9rem;
+      display: block; font-weight: 600; color: var(--gray-700);
+      margin-bottom: 4px; font-size: 0.85rem;
     }
+
+    .form-group label i { color: var(--primary); margin-right: 4px; }
 
     .form-group .helper-text {
-      font-size: 0.75rem;
-      color: #718096;
-      margin-top: 4px;
+      font-size: 0.75rem; color: var(--gray-400);
+      margin-top: 5px; display: flex; align-items: center; gap: 4px;
     }
 
-    .disability-input-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 8px 0;
-    }
+    .other-input-container { display: none; margin-top: 8px; animation: slideDown 0.2s ease; }
+    .other-input-container.active { display: block; }
+
+    /* DISABILITY TAGS */
+    .disability-input-wrapper { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0; }
 
     .disability-tag-input {
-      display: inline-block;
-      background: #eef2ff;
-      color: #0a4b7a;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      color: var(--primary); padding: 6px 14px; border-radius: 40px;
+      font-size: 0.82rem; font-weight: 600;
+      border: 1px solid rgba(10, 75, 122, 0.1);
+      animation: scaleIn 0.2s ease;
     }
+
+    @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     .disability-tag-input .remove-tag {
-      cursor: pointer;
-      color: #dc2626;
-      font-size: 0.8rem;
+      cursor: pointer; color: var(--danger);
+      font-size: 0.8rem; transition: var(--transition);
     }
 
-    .disability-tag-input .remove-tag:hover {
-      color: #b91c1c;
-    }
+    .disability-tag-input .remove-tag:hover { color: #991b1b; transform: scale(1.15); }
 
-    .message-modal {
-      text-align: center;
-      padding: 10px 0;
-    }
+    /* MESSAGE MODAL */
+    .message-modal { text-align: center; padding: 20px 0; }
 
     .message-icon {
-      font-size: 3.5rem;
-      margin-bottom: 1rem;
+      font-size: 3.5rem; margin-bottom: 1.2rem;
+      animation: scaleIn 0.3s ease;
     }
 
-    .message-success { color: #10b981; }
-    .message-error { color: #dc2626; }
-    .message-info { color: #0a4b7a; }
-    .message-warning { color: #f9b81b; }
+    .message-success { color: var(--success); }
+    .message-error { color: var(--danger); }
+    .message-info { color: var(--info); }
+    .message-warning { color: var(--warning); }
 
+    /* FILE UPLOAD */
     .file-upload-area {
-      border: 2px dashed #e2e8f0;
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      background: #fafcff;
-      margin: 8px 0;
+      border: 2px dashed var(--gray-300); border-radius: var(--radius-md);
+      padding: 28px 20px; text-align: center; cursor: pointer;
+      transition: var(--transition); background: var(--gray-50); margin: 8px 0;
     }
 
-    .file-upload-area:hover {
-      border-color: #0a4b7a;
-      background: #f0f7ff;
-    }
+    .file-upload-area:hover { border-color: var(--primary); background: #f0f7ff; transform: translateY(-2px); }
 
     .file-upload-area i {
-      font-size: 2rem;
-      color: #0a4b7a;
-      display: block;
-      margin-bottom: 8px;
+      font-size: 2rem; color: var(--primary);
+      display: block; margin-bottom: 10px; opacity: 0.8;
     }
 
     .file-upload-area .file-name {
-      font-weight: 500;
-      color: #0a4b7a;
-      margin-top: 4px;
+      font-weight: 600; color: var(--primary);
+      margin-top: 6px; font-size: 0.88rem;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
+    /* RESPONSIVE */
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
 
     @media (max-width: 768px) {
       .dashboard-container { padding: 1rem; }
-      .grid-2 { grid-template-columns: 1fr; }
-      .modal-container { width: 95%; margin: 1rem; }
-      header { padding: 1rem; }
-      .profile-info .label { min-width: 90px; }
-      .qr-card img { max-width: 140px; }
+      .grid-2 { display: flex; flex-direction: column; gap: 1rem; }
+      .card.quick-inquiry { order: -1; }
+      header { padding: 0.9rem 1.1rem; border-radius: var(--radius-lg); }
+      .logo-area img { width: 42px; height: 42px; }
+      .logo-area strong { font-size: 0.9rem; }
+      .logo-area small { font-size: 0.7rem; }
+      .access-tools { gap: 6px; }
+      .access-tools button { padding: 8px 12px; font-size: 0.78rem; }
+      .access-tools button span { display: none; }
+      .notif-dropdown { right: 0.5rem; left: 0.5rem; width: auto; }
+      .modal-container { border-radius: var(--radius-lg); }
+      .modal-header { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+      .modal-footer { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+      .card { padding: 1.3rem; border-radius: var(--radius-lg); }
+      .card h3 { font-size: 1.05rem; }
+      .card h3 i { width: 32px; height: 32px; font-size: 1.05rem; }
+      .profile-info .label { min-width: 95px; font-size: 0.75rem; }
+      .profile-info .value { font-size: 0.85rem; }
+      .quick-request-buttons .chip { font-size: 0.75rem; padding: 6px 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .card h3 { font-size: 1rem; }
+      .profile-info .label { min-width: 80px; }
+      .profile-info .value { font-size: 0.82rem; }
+      .document-item { padding: 12px; }
+      .document-item .doc-name { font-size: 0.82rem; }
     }
   </style>
 </head>
 <body>
 <div id="loadingScreen" class="loading-container">
   <div class="loading-spinner"></div>
-  <p><i class="fas fa-spinner fa-spin"></i> Loading your dashboard...</p>
+  <p style="color: var(--primary); font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Loading your dashboard...</p>
 </div>
 
 <div id="dashboardContent" style="display: none;">
@@ -614,66 +563,72 @@
         </div>
       </div>
       <div class="access-tools">
-        <button id="fontToggle"><i class="fas fa-text-height"></i> Font Size</button>
-        <button id="contrastToggle"><i class="fas fa-circle-half-stroke"></i> Contrast</button>
-        <button id="logoutBtn" class="btn-outline" style="padding: 8px 20px;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button id="notifBtn" class="notif-btn" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+        </button>
+        <button id="fontToggle" title="Font Size"><i class="fas fa-text-height"></i> <span>Font Size</span></button>
+        <button id="logoutBtn" class="btn-outline" style="padding: 9px 18px;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
+      </div>
+
+      <div class="notif-dropdown" id="notifDropdown">
+        <div class="notif-dropdown-header">
+          <h4><i class="fas fa-bell" style="color:var(--accent);"></i> Notifications</h4>
+          <button class="modal-close" onclick="closeNotifDropdown()" style="width:28px;height:28px;font-size:0.9rem;">&times;</button>
+        </div>
+        <div class="notif-dropdown-body" id="notifDropdownBody">
+          <div class="notif-empty"><i class="fas fa-spinner fa-spin"></i><br>Loading...</div>
+        </div>
       </div>
     </header>
 
     <div class="grid-2">
+      <!-- QUICK INQUIRY CARD -->
+      <div class="card quick-inquiry">
+        <h3><i class="fas fa-question-circle"></i> Send Inquiry to Admin</h3>
+        <p style="color: var(--gray-600); font-size: 0.82rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
+          <i class="fas fa-lightbulb" style="color: var(--accent);"></i> 
+          Select a common concern below or type your own message
+        </p>
+
+        <div class="quick-request-buttons">
+          <button class="chip" onclick="quickInquiry('Document verification follow-up')"><i class="fas fa-file-circle-check"></i> Document Verification</button>
+          <button class="chip" onclick="quickInquiry('Request for PWD ID assistance')"><i class="fas fa-id-card"></i> PWD ID Assistance</button>
+          <button class="chip" onclick="quickInquiry('Scholarship inquiry')"><i class="fas fa-graduation-cap"></i> Scholarship</button>
+          <button class="chip" onclick="quickInquiry('Request for medical assistance')"><i class="fas fa-notes-medical"></i> Medical Assistance</button>
+          <button class="chip" onclick="quickInquiry('Request for counseling services')"><i class="fas fa-heart"></i> Counseling</button>
+          <button class="chip" onclick="quickInquiry('Concern about accessibility')"><i class="fas fa-wheelchair"></i> Accessibility</button>
+          <button class="chip" onclick="quickInquiry('Request for academic adjustment')"><i class="fas fa-book"></i> Academic Adjustment</button>
+          <button class="chip" onclick="quickInquiry('Status of my application')"><i class="fas fa-clock"></i> Status Inquiry</button>
+        </div>
+
+        <textarea id="inquiryMessage" rows="3" placeholder="Type your question or concern..."></textarea>
+        <button id="sendInquiryBtn" class="btn btn-primary" style="width:100%;"><i class="fas fa-paper-plane"></i> Send Inquiry</button>
+      </div>
+
       <!-- Profile Card -->
       <div class="card">
         <h3><i class="fas fa-id-card"></i> My Profile & Status</h3>
         <div id="profileInfo" class="profile-info"></div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;">
-          <button id="editProfileBtn" class="btn btn-primary" style="flex:1;"><i class="fas fa-edit"></i> Edit Profile</button>
-          <button id="updateStatusBtn" class="btn btn-outline" style="flex:1;"><i class="fas fa-sync-alt"></i> Check Status</button>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;">
+          <button id="editProfileBtn" class="btn btn-primary" style="flex:1;"><i class="fas fa-pen-to-square"></i> Edit Profile</button>
+          <button id="updateStatusBtn" class="btn btn-outline" style="flex:1;"><i class="fas fa-rotate"></i> Check Status</button>
         </div>
       </div>
 
-      <!-- Google Form QR Code Card -->
+      <!-- Admin Messages Card -->
       <div class="card">
-        <h3><i class="fas fa-qrcode"></i> PWD Assessment Form</h3>
-        <div class="qr-card">
-          <div class="qr-label"><i class="fas fa-clipboard-list"></i> PWD Student Registration Form</div>
-          <img src="https://johnstevenwaraya.sirv.com/PWD/qr-code%20(1).png" alt="PWD Google Form QR Code">
-          <div class="qr-sub">
-            <i class="fas fa-phone"></i> Scan the QR code to access the form<br>
-            <small>Complete this form before uploading your documents</small>
-          </div>
-        </div>
-        <div style="margin-top: 12px;">
-          <button id="uploadFormProofBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-upload"></i> Upload Form Completion Proof</button>
-        </div>
-      </div>
-
-      <!-- Notifications Card -->
-      <div class="card">
-        <h3><i class="fas fa-bell"></i> Real-Time Notifications</h3>
-        <div id="notificationsList" style="max-height: 320px; overflow-y: auto;"></div>
-      </div>
-
-      <!-- Admin Messages Card (Read Only) -->
-      <div class="card">
-        <h3><i class="fas fa-inbox"></i> Messages from Admin</h3>
+        <h3><i class="fas fa-envelope-open-text"></i> Messages from Admin</h3>
         <div id="adminMessagesContainer" style="max-height: 350px; overflow-y: auto;">
-          <div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>
+          <div style="text-align:center;padding:2.5rem;color:var(--gray-400);"><i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i><br><br>Loading messages...</div>
         </div>
-      </div>
-
-      <!-- Send Inquiry Card -->
-      <div class="card">
-        <h3><i class="fas fa-question-circle"></i> Send Inquiry to Admin</h3>
-        <p style="color: #4a5568; font-size: 0.85rem; margin-bottom: 0.8rem;"><i class="fas fa-info-circle"></i> Send your questions or concerns to the admin. They will reply to you.</p>
-        <textarea id="inquiryMessage" rows="3" placeholder="Type your question or concern..."></textarea>
-        <button id="sendInquiryBtn" class="btn btn-primary" style="width:100%;"><i class="fas fa-paper-plane"></i> Send Inquiry</button>
       </div>
 
       <!-- Documents Card -->
       <div class="card">
         <h3><i class="fas fa-folder-open"></i> My Uploaded Documents</h3>
         <div id="documentsArea"></div>
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
           <button id="uploadMedicalBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-file-medical"></i> Upload Medical Certificate</button>
           <button id="uploadPWDIdBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-id-card"></i> Upload PWD ID Card</button>
           <button id="uploadSchoolIdBtn" class="btn btn-outline btn-sm" style="width:100%;"><i class="fas fa-school"></i> Upload School ID</button>
@@ -716,66 +671,140 @@
 
   let currentUserData = null;
   let userDocRef = null;
+  let uploadTimerInterval = null;
+  let uploadStartTime = null;
   let disabilityTags = [];
 
-  // Modal functions
-  function showModal(title, body, confirmText = "Confirm", cancelText = "Cancel", onConfirm = null, showCancel = true) {
-    const modal = document.getElementById("modalOverlay");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalBody = document.getElementById("modalBody");
-    const modalFooter = document.getElementById("modalFooter");
-    
-    modalTitle.innerHTML = `<i class="fas fa-pen"></i> ${title}`;
-    modalBody.innerHTML = body;
-    
-    modalFooter.innerHTML = '';
-    
-    if (showCancel) {
-      const cancelBtn = document.createElement('button');
-      cancelBtn.className = 'btn btn-outline';
-      cancelBtn.innerHTML = `<i class="fas fa-times"></i> ${cancelText}`;
-      cancelBtn.onclick = () => closeModal();
-      modalFooter.appendChild(cancelBtn);
-    }
-    
-    const confirmBtn = document.createElement('button');
-    confirmBtn.className = 'btn btn-primary';
-    confirmBtn.innerHTML = `<i class="fas fa-check"></i> ${confirmText}`;
-    confirmBtn.onclick = () => {
-      if (onConfirm) onConfirm();
-      closeModal();
-    };
-    modalFooter.appendChild(confirmBtn);
-    
-    modal.classList.add('active');
+  // ==========================================
+  // COURSE/PROGRAM DATA BY DEPARTMENT
+  // ==========================================
+  const departmentPrograms = {
+    "CAS – College of Arts and Sciences": [
+      "Bachelor of Science in Information Technology",
+      "Bachelor of Science in Information System",
+      "Bachelor of Science in Psychology",
+      "Bachelor of Science in Statistics",
+      "Other"
+    ],
+    "CIT – College of Industrial Technology": [
+      "Bachelor of Science in Architecture",
+      "Bachelor of Industrial Technology – Automotive Technology",
+      "Bachelor of Industrial Technology – Electrical Technology",
+      "Bachelor of Industrial Technology – Electronics Technology",
+      "Bachelor of Industrial Technology – Food Technology/Culinary Technology",
+      "Bachelor of Industrial Technology – Drafting Technology",
+      "Other"
+    ],
+    "COED – College of Education": [
+      "Bachelor of Physical Education (BPED)",
+      "Bachelor of Elementary Education (BEEd)",
+      "Bachelor of Secondary Education (BSEd) – English",
+      "Bachelor of Secondary Education (BSEd) – Filipino",
+      "Bachelor of Secondary Education (BSEd) – Mathematics",
+      "Bachelor of Secondary Education (BSEd) – Science",
+      "Bachelor of Secondary Education (BSEd) – Social Studies",
+      "Other"
+    ],
+    "COENG – College of Engineering": [
+      "Bachelor of Science in Civil Engineering",
+      "Bachelor of Science in Electrical Engineering",
+      "Bachelor of Science in Electronics Engineering",
+      "Bachelor of Science in Computer Engineering",
+      "Other"
+    ],
+    "CONHS – College of Nursing and Health Sciences": [
+      "Bachelor of Science in Nursing",
+      "Bachelor of Science in Pharmacy",
+      "Bachelor of Science in Nutrition and Dietetics",
+      "Other"
+    ]
+  };
+
+  // ==========================================
+  // DISABILITY TYPES DATA
+  // ==========================================
+  const disabilityCategories = {
+    "Special Needs Categories": [
+      "Autism Spectrum Disorder (ASD)",
+      "Attention-Deficit/Hyperactivity Disorder (ADHD)",
+      "Intellectual Disability",
+      "Specific Learning Disability",
+      "Speech and Language Disorder",
+      "Hearing Impairment",
+      "Visual Impairment",
+      "Physical Disability",
+      "Developmental Delay",
+      "Multiple Disabilities",
+      "Other"
+    ],
+    "Types of Disability": [
+      "Physical Disability",
+      "Visual Disability",
+      "Deaf or Hard of Hearing Disability",
+      "Intellectual Disability",
+      "Learning Disability",
+      "Mental Disability",
+      "Psychosocial Disability",
+      "Speech and Language Impairment",
+      "Cancer",
+      "Rare Disease",
+      "Orthopedic Disability",
+      "Other"
+    ]
+  };
+
+  // ==========================================
+  // MODAL FUNCTIONS
+  // ==========================================
+function showModal(title, body, confirmText = "Confirm", cancelText = "Cancel", onConfirm = null, showCancel = true) {
+  const modal = document.getElementById("modalOverlay");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  const modalFooter = document.getElementById("modalFooter");
+  
+  modalTitle.innerHTML = `<i class="fas fa-pen"></i> ${title}`;
+  modalBody.innerHTML = body;
+  
+  modalFooter.innerHTML = '';
+  
+  if (showCancel) {
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-outline';
+    cancelBtn.innerHTML = `<i class="fas fa-times"></i> ${cancelText}`;
+    cancelBtn.onclick = () => closeModal();
+    modalFooter.appendChild(cancelBtn);
   }
+  
+  const confirmBtn = document.createElement('button');
+  confirmBtn.className = 'btn btn-primary';
+  confirmBtn.id = 'modalConfirmBtn';
+  confirmBtn.innerHTML = `<i class="fas fa-check"></i> ${confirmText}`;
+  confirmBtn.onclick = async () => {
+    // Don't close modal here - let the onConfirm handler decide
+    if (onConfirm) {
+      await onConfirm();
+    }
+  };
+  modalFooter.appendChild(confirmBtn);
+  
+  modal.classList.add('active');
+}
   
   function showMessageDialog(title, message, type = 'info') {
     let icon = '';
     let iconClass = '';
     
     switch(type) {
-      case 'success':
-        icon = 'fa-circle-check';
-        iconClass = 'message-success';
-        break;
-      case 'error':
-        icon = 'fa-circle-xmark';
-        iconClass = 'message-error';
-        break;
-      case 'warning':
-        icon = 'fa-triangle-exclamation';
-        iconClass = 'message-warning';
-        break;
-      default:
-        icon = 'fa-circle-info';
-        iconClass = 'message-info';
+      case 'success': icon = 'fa-circle-check'; iconClass = 'message-success'; break;
+      case 'error': icon = 'fa-circle-xmark'; iconClass = 'message-error'; break;
+      case 'warning': icon = 'fa-triangle-exclamation'; iconClass = 'message-warning'; break;
+      default: icon = 'fa-circle-info'; iconClass = 'message-info';
     }
     
     const body = `
       <div class="message-modal">
         <div class="message-icon ${iconClass}"><i class="fas ${icon}"></i></div>
-        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">${message}</p>
+        <p style="font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--gray-700); line-height: 1.5;">${message}</p>
       </div>
     `;
     
@@ -791,13 +820,97 @@
     modal.classList.add('active');
   }
   
-  // Parse disability string to array
+  function closeModal() {
+    const modal = document.getElementById("modalOverlay");
+    modal.classList.remove('active');
+    stopUploadTimer();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeNotifDropdown();
+    }
+  });
+
+  function stopUploadTimer() {
+    if (uploadTimerInterval) {
+      clearInterval(uploadTimerInterval);
+      uploadTimerInterval = null;
+    }
+    uploadStartTime = null;
+  }
+
+  // ==========================================
+  // NOTIFICATION DROPDOWN
+  // ==========================================
+  function toggleNotifDropdown() {
+    const dropdown = document.getElementById('notifDropdown');
+    dropdown.classList.toggle('active');
+    if (dropdown.classList.contains('active')) {
+      loadNotificationsForDropdown();
+    }
+  }
+
+  function closeNotifDropdown() {
+    document.getElementById('notifDropdown').classList.remove('active');
+  }
+
+  document.getElementById('notifBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleNotifDropdown();
+  });
+
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('notifDropdown');
+    const btn = document.getElementById('notifBtn');
+    if (dropdown.classList.contains('active') && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+      closeNotifDropdown();
+    }
+  });
+
+  function loadNotificationsForDropdown() {
+    if (!auth.currentUser) return;
+    
+    const body = document.getElementById('notifDropdownBody');
+    body.innerHTML = '<div class="notif-empty"><i class="fas fa-spinner fa-spin"></i><br>Loading...</div>';
+    
+    db.collection("notifications")
+      .where("userId", "in", ["all", auth.currentUser.uid])
+      .orderBy("timestamp", "desc")
+      .limit(15)
+      .get()
+      .then((snap) => {
+        let html = "";
+        if (snap.empty) {
+          html = `<div class="notif-empty"><i class="fas fa-bell-slash"></i><br>No notifications</div>`;
+        } else {
+          snap.forEach(doc => {
+            const n = doc.data();
+            const date = n.timestamp?.toDate?.() || new Date();
+            html += `<div class="notification-item">
+              <strong><i class="fas fa-bullhorn" style="color: var(--accent);"></i> ${n.title || "Notification"}</strong>
+              ${n.body || ""}<br>
+              <small style="color: var(--gray-400); font-size: 0.75rem;"><i class="fas fa-clock"></i> ${date.toLocaleString()}</small>
+            </div>`;
+          });
+        }
+        body.innerHTML = html;
+      })
+      .catch((error) => {
+        console.error("Notifications error:", error);
+        body.innerHTML = `<div class="notif-empty"><i class="fas fa-exclamation-circle"></i><br>Error loading notifications</div>`;
+      });
+  }
+
+  // ==========================================
+  // DISABILITY TAGS
+  // ==========================================
   function parseDisabilities(disabilityStr) {
     if (!disabilityStr) return [];
     return disabilityStr.split(',').map(d => d.trim()).filter(d => d !== '');
   }
 
-  // Render disability tags in modal
   function renderDisabilityTags(containerId, tags) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -822,185 +935,352 @@
     });
   }
 
-  // Add disability tag
-  function addDisabilityTag() {
-    const input = document.getElementById('disabilityInput');
-    const tag = input.value.trim();
-    if (tag && !disabilityTags.includes(tag)) {
-      disabilityTags.push(tag);
+  window.addDisabilityFromDropdown = function() {
+    const typeSelect = document.getElementById('disabilityTypeSelect');
+    const otherInput = document.getElementById('disabilityOtherInput');
+    
+    let selectedValue = '';
+    
+    if (otherInput && otherInput.value.trim() && typeSelect.value === 'Other') {
+      selectedValue = otherInput.value.trim();
+    } else if (typeSelect.value && typeSelect.value !== 'Other') {
+      selectedValue = typeSelect.value;
+    }
+    
+    if (selectedValue && !disabilityTags.includes(selectedValue)) {
+      disabilityTags.push(selectedValue);
       renderDisabilityTags('disabilityTagsContainer', disabilityTags);
-      input.value = '';
+      
+      if (typeSelect) typeSelect.value = '';
+      if (otherInput) otherInput.value = '';
+      const otherContainer = document.getElementById('disabilityOtherContainer');
+      if (otherContainer) otherContainer.classList.remove('active');
+    } else if (disabilityTags.includes(selectedValue)) {
+      showMessageDialog("Duplicate", "This disability type has already been added.", "warning");
+    } else {
+      showMessageDialog("No Selection", "Please select a disability type to add.", "warning");
     }
-    input.focus();
+  };
+
+  window.handleDisabilityCategoryChange = function() {
+    const categorySelect = document.getElementById('disabilityCategorySelect');
+    const typeSelect = document.getElementById('disabilityTypeSelect');
+    const category = categorySelect.value;
+    
+    typeSelect.innerHTML = '<option value="">Select Disability Type</option>';
+    
+    if (category && disabilityCategories[category]) {
+      disabilityCategories[category].forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        typeSelect.appendChild(option);
+      });
+    }
+  };
+
+  window.handleDisabilityTypeChange = function() {
+    const typeSelect = document.getElementById('disabilityTypeSelect');
+    const otherContainer = document.getElementById('disabilityOtherContainer');
+    
+    if (typeSelect.value === 'Other') {
+      otherContainer.classList.add('active');
+    } else {
+      otherContainer.classList.remove('active');
+    }
+  };
+
+  // ==========================================
+  // COURSE/PROGRAM HANDLING
+  // ==========================================
+  window.handleDepartmentChange = function() {
+    const deptSelect = document.getElementById('editDepartment');
+    const programSelect = document.getElementById('editProgram');
+    const programOtherContainer = document.getElementById('programOtherContainer');
+    const programOtherInput = document.getElementById('editProgramOther');
+    const dept = deptSelect.value;
+    
+    programSelect.innerHTML = '<option value="">Select Program / Course</option>';
+    programOtherContainer.classList.remove('active');
+    programOtherInput.value = '';
+    
+    if (dept && departmentPrograms[dept]) {
+      departmentPrograms[dept].forEach(program => {
+        const option = document.createElement('option');
+        option.value = program;
+        option.textContent = program;
+        programSelect.appendChild(option);
+      });
+    }
+  };
+
+  window.handleProgramChange = function() {
+    const programSelect = document.getElementById('editProgram');
+    const programOtherContainer = document.getElementById('programOtherContainer');
+    
+    if (programSelect.value === 'Other') {
+      programOtherContainer.classList.add('active');
+    } else {
+      programOtherContainer.classList.remove('active');
+    }
+  };
+
+  // ==========================================
+  // QUICK INQUIRY
+  // ==========================================
+  window.quickInquiry = function(text) {
+    const textarea = document.getElementById('inquiryMessage');
+    textarea.value = text;
+    textarea.focus();
+    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+function showEditProfileModal() {
+  disabilityTags = parseDisabilities(currentUserData.disability || '');
+  
+  let savedDepartment = currentUserData.department || '';
+  let savedProgram = currentUserData.program || '';
+  let savedCourse = currentUserData.course || '';
+  let year = currentUserData.year || '';
+  let academicYear = currentUserData.academicYear || '';
+  
+  // If program is empty but course has value, extract program from course
+  if (!savedProgram && savedCourse) {
+    const yearMatch = savedCourse.match(/\s*-\s*(1st|2nd|3rd|4th|5th)\s*Year/i);
+    if (yearMatch) {
+      savedProgram = savedCourse.replace(/\s*-\s*(1st|2nd|3rd|4th|5th)\s*Year/i, '').trim();
+    } else {
+      savedProgram = savedCourse;
+    }
   }
-
-  function showEditProfileModal() {
-    // Initialize disability tags from current user data
-    disabilityTags = parseDisabilities(currentUserData.disability || '');
-    
-    // Parse course and year
-    let course = currentUserData.course || '';
-    let year = currentUserData.year || '';
-    let academicYear = currentUserData.academicYear || '';
-    
-    // Try to extract year from course if stored combined
-    if (course && !year) {
-      const yearMatch = course.match(/\b(1st|2nd|3rd|4th|5th)\s*Year/i);
-      if (yearMatch) {
-        year = yearMatch[1] + ' Year';
-        course = course.replace(/\s*-\s*1st\s*Year|\s*-\s*2nd\s*Year|\s*-\s*3rd\s*Year|\s*-\s*4th\s*Year|\s*-\s*5th\s*Year/i, '').trim();
-      }
+  
+  // Extract year from course if needed
+  if (savedCourse && !year) {
+    const yearMatch = savedCourse.match(/\b(1st|2nd|3rd|4th|5th)\s*Year/i);
+    if (yearMatch) {
+      year = yearMatch[1] + ' Year';
     }
+  }
+  
+  // Build department options
+  let deptOptions = '<option value="">Select Department</option>';
+  Object.keys(departmentPrograms).forEach(dept => {
+    deptOptions += `<option value="${dept}" ${savedDepartment === dept ? 'selected' : ''}>${dept}</option>`;
+  });
 
-    const body = `
-      <div class="form-group">
-        <label><i class="fas fa-user"></i> Full Name *</label>
-        <input type="text" id="editName" class="modal-input" value="${currentUserData.name || ''}" placeholder="Enter your full name">
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-book"></i> Course / Program *</label>
-        <input type="text" id="editCourse" class="modal-input" value="${course}" placeholder="e.g., Bachelor of Science in Information Technology">
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-graduation-cap"></i> Year Level *</label>
-        <select id="editYear" class="modal-select">
-          <option value="">Select Year Level</option>
-          <option value="1st Year" ${year === '1st Year' ? 'selected' : ''}>1st Year</option>
-          <option value="2nd Year" ${year === '2nd Year' ? 'selected' : ''}>2nd Year</option>
-          <option value="3rd Year" ${year === '3rd Year' ? 'selected' : ''}>3rd Year</option>
-          <option value="4th Year" ${year === '4th Year' ? 'selected' : ''}>4th Year</option>
-          <option value="5th Year" ${year === '5th Year' ? 'selected' : ''}>5th Year</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-calendar-alt"></i> Academic Year *</label>
-        <input type="text" id="editAcademicYear" class="modal-input" value="${academicYear || ''}" placeholder="e.g., 2024-2025">
-        <div class="helper-text"><i class="fas fa-info-circle"></i> Format: YYYY-YYYY (e.g., 2024-2025)</div>
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-wheelchair"></i> Disability Type(s) *</label>
-        <div class="disability-input-wrapper">
-          <input type="text" id="disabilityInput" class="modal-input" style="flex:1; min-width:150px;" placeholder="Type disability and press Add">
-          <button type="button" class="btn btn-primary btn-sm" onclick="addDisabilityTag()" style="white-space:nowrap;"><i class="fas fa-plus"></i> Add</button>
-        </div>
-        <div class="helper-text"><i class="fas fa-info-circle"></i> Add multiple disabilities by typing and clicking "Add"</div>
-        <div id="disabilityTagsContainer" class="disability-input-wrapper" style="margin-top:8px;"></div>
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-phone"></i> Contact Number *</label>
-        <input type="tel" id="editContact" class="modal-input" value="${currentUserData.contact || ''}" placeholder="Enter your contact number">
-      </div>
-    `;
-    
-    showModal("Edit Profile", body, "Save Changes", "Cancel", async () => {
-      const newName = document.getElementById("editName").value.trim();
-      const newCourse = document.getElementById("editCourse").value.trim();
-      const newYear = document.getElementById("editYear").value;
-      const newAcademicYear = document.getElementById("editAcademicYear").value.trim();
-      const newContact = document.getElementById("editContact").value.trim();
-      
-      // Combine course and year
-      const fullCourse = newYear ? `${newCourse} - ${newYear}` : newCourse;
-      
-      // Get disabilities
-      const disabilities = disabilityTags.join(', ');
-      
-      // Validation
-      if (!newName) {
-        showMessageDialog("Validation Error", "Name cannot be empty.", "error");
-        return;
-      }
-      if (!newCourse) {
-        showMessageDialog("Validation Error", "Course cannot be empty.", "error");
-        return;
-      }
-      if (!newYear) {
-        showMessageDialog("Validation Error", "Please select your year level.", "error");
-        return;
-      }
-      if (!newAcademicYear) {
-        showMessageDialog("Validation Error", "Please enter the academic year.", "error");
-        return;
-      }
-      if (disabilityTags.length === 0) {
-        showMessageDialog("Validation Error", "Please add at least one disability type.", "error");
-        return;
-      }
-      if (!newContact) {
-        showMessageDialog("Validation Error", "Contact number cannot be empty.", "error");
-        return;
-      }
-      
-      try {
-        // Update Firestore
-        const updateData = {
-          name: newName,
-          course: fullCourse,
-          year: newYear,
-          academicYear: newAcademicYear,
-          disability: disabilities,
-          disabilityList: disabilityTags,
-          contact: newContact,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        console.log("Updating profile with data:", updateData);
-        
-        await db.collection("users").doc(auth.currentUser.uid).update(updateData);
-        
-        // Verify the update by fetching the document
-        const updatedDoc = await db.collection("users").doc(auth.currentUser.uid).get();
-        console.log("Updated user data:", updatedDoc.data());
-        
-        // Update local data
-        currentUserData.name = newName;
-        currentUserData.course = fullCourse;
-        currentUserData.year = newYear;
-        currentUserData.academicYear = newAcademicYear;
-        currentUserData.disability = disabilities;
-        currentUserData.disabilityList = disabilityTags;
-        currentUserData.contact = newContact;
-        
-        loadProfile();
-        document.getElementById("userNameDisplay").innerText = newName;
-        showMessageDialog("Profile Updated", "Your profile has been updated successfully!", "success");
-      } catch (error) {
-        console.error("Profile update error:", error);
-        showMessageDialog("Error", "Failed to update profile: " + error.message, "error");
+  // Build disability category options
+  let disabilityCatOptions = '<option value="">Select Category</option>';
+  Object.keys(disabilityCategories).forEach(cat => {
+    disabilityCatOptions += `<option value="${cat}">${cat}</option>`;
+  });
+
+  // Build program options based on saved department
+  let programOptions = '<option value="">Select Program / Course</option>';
+  let useOtherProgram = false;
+  let programOtherValue = '';
+  
+  if (savedDepartment && departmentPrograms[savedDepartment]) {
+    departmentPrograms[savedDepartment].forEach(program => {
+      if (program !== 'Other') {
+        programOptions += `<option value="${program}" ${savedProgram === program ? 'selected' : ''}>${program}</option>`;
       }
     });
+    programOptions += `<option value="Other" ${(savedProgram && !departmentPrograms[savedDepartment].includes(savedProgram)) || savedProgram === 'Other' ? 'selected' : ''}>Other</option>`;
     
-    // Render disability tags after modal is shown
-    setTimeout(() => {
-      renderDisabilityTags('disabilityTagsContainer', disabilityTags);
-      // Add enter key support for disability input
-      const input = document.getElementById('disabilityInput');
-      if (input) {
-        input.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            addDisabilityTag();
-          }
-        });
-      }
-    }, 100);
+    if (savedProgram && !departmentPrograms[savedDepartment].includes(savedProgram)) {
+      useOtherProgram = true;
+      programOtherValue = savedProgram;
+    }
+  } else {
+    programOptions += `<option value="Other">Other</option>`;
   }
 
-  // Make addDisabilityTag available globally for onclick
-  window.addDisabilityTag = addDisabilityTag;
+  const body = `
+    <div class="form-group">
+      <label><i class="fas fa-user"></i> Full Name *</label>
+      <input type="text" id="editName" class="modal-input" value="${currentUserData.name || ''}" placeholder="Enter your full name">
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-building"></i> Department *</label>
+      <select id="editDepartment" class="modal-select" onchange="handleDepartmentChange()">
+        ${deptOptions}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-book"></i> Program / Course *</label>
+      <select id="editProgram" class="modal-select" onchange="handleProgramChange()">
+        ${programOptions}
+      </select>
+      <div class="other-input-container ${useOtherProgram ? 'active' : ''}" id="programOtherContainer">
+        <input type="text" id="editProgramOther" class="modal-input" placeholder="Please specify your program" value="${programOtherValue}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-graduation-cap"></i> Year Level *</label>
+      <select id="editYear" class="modal-select">
+        <option value="">Select Year Level</option>
+        <option value="1st Year" ${year === '1st Year' ? 'selected' : ''}>1st Year</option>
+        <option value="2nd Year" ${year === '2nd Year' ? 'selected' : ''}>2nd Year</option>
+        <option value="3rd Year" ${year === '3rd Year' ? 'selected' : ''}>3rd Year</option>
+        <option value="4th Year" ${year === '4th Year' ? 'selected' : ''}>4th Year</option>
+        <option value="5th Year" ${year === '5th Year' ? 'selected' : ''}>5th Year</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-calendar-alt"></i> Academic Year *</label>
+      <input type="text" id="editAcademicYear" class="modal-input" value="${academicYear || ''}" placeholder="e.g., 2024-2025">
+      <div class="helper-text"><i class="fas fa-info-circle"></i> Format: YYYY-YYYY (e.g., 2024-2025)</div>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-wheelchair"></i> Disability Type(s) *</label>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+        <select id="disabilityCategorySelect" class="modal-select" onchange="handleDisabilityCategoryChange()" style="margin-top:0;">
+          ${disabilityCatOptions}
+        </select>
+        <select id="disabilityTypeSelect" class="modal-select" onchange="handleDisabilityTypeChange()" style="margin-top:0;">
+          <option value="">Select Disability Type</option>
+        </select>
+      </div>
+      
+      <div class="other-input-container" id="disabilityOtherContainer">
+        <input type="text" id="disabilityOtherInput" class="modal-input" placeholder="Please specify your disability">
+      </div>
+      
+      <button type="button" class="btn btn-primary btn-sm" onclick="addDisabilityFromDropdown()" style="width:100%; margin-top:8px;">
+        <i class="fas fa-plus"></i> Add Disability
+      </button>
+      
+      <div class="helper-text"><i class="fas fa-info-circle"></i> Add multiple disabilities by selecting and clicking "Add"</div>
+      <div id="disabilityTagsContainer" class="disability-input-wrapper" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-phone"></i> Contact Number *</label>
+      <input type="tel" id="editContact" class="modal-input" value="${currentUserData.contact || ''}" placeholder="Enter your contact number">
+    </div>
+  `;
   
+  showModal("Edit Profile", body, "Save Changes", "Cancel", async () => {
+    // Read values from form FIRST before doing anything
+    const newName = document.getElementById("editName").value.trim();
+    const newDepartment = document.getElementById("editDepartment").value;
+    const newProgramSelect = document.getElementById("editProgram").value;
+    const newProgramOther = document.getElementById("editProgramOther") ? document.getElementById("editProgramOther").value.trim() : '';
+    const newYear = document.getElementById("editYear").value;
+    const newAcademicYear = document.getElementById("editAcademicYear").value.trim();
+    const newContact = document.getElementById("editContact").value.trim();
+    
+    // Determine final program
+    let newProgram = '';
+    if (newProgramSelect === 'Other') {
+      newProgram = newProgramOther;
+    } else {
+      newProgram = newProgramSelect;
+    }
+    
+    const fullCourse = newYear ? `${newProgram} - ${newYear}` : newProgram;
+    const disabilities = disabilityTags.join(', ');
+    
+    // Validation
+    if (!newName) { showMessageDialog("Validation Error", "Name cannot be empty.", "error"); return; }
+    if (!newDepartment) { showMessageDialog("Validation Error", "Please select your department.", "error"); return; }
+    if (!newProgram) { showMessageDialog("Validation Error", "Please select or specify your program.", "error"); return; }
+    if (!newYear) { showMessageDialog("Validation Error", "Please select your year level.", "error"); return; }
+    if (!newAcademicYear) { showMessageDialog("Validation Error", "Please enter the academic year.", "error"); return; }
+    
+    const academicYearRegex = /^\d{4}-\d{4}$/;
+    if (!academicYearRegex.test(newAcademicYear)) {
+      showMessageDialog("Validation Error", "Academic year must be in format YYYY-YYYY (e.g., 2024-2025)", "error");
+      return;
+    }
+    
+    if (disabilityTags.length === 0) { showMessageDialog("Validation Error", "Please add at least one disability type.", "error"); return; }
+    if (!newContact) { showMessageDialog("Validation Error", "Contact number cannot be empty.", "error"); return; }
+    
+    const cleanPhone = newContact.replace(/\D/g, '');
+    if (cleanPhone.length !== 11 || !cleanPhone.startsWith('0')) {
+      showMessageDialog("Validation Error", "Contact number must be exactly 11 digits starting with 09 (e.g., 09123456789)", "error");
+      return;
+    }
+    
+    try {
+      // Disable save button
+      const saveBtn = document.querySelector('#modalConfirmBtn');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      }
+      
+      const updateData = {
+        name: newName,
+        department: newDepartment,
+        program: newProgram,
+        course: fullCourse,
+        year: newYear,
+        academicYear: newAcademicYear,
+        disability: disabilities,
+        disabilityList: disabilityTags,
+        contact: newContact,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      console.log("Saving profile:", updateData);
+      
+      await db.collection("users").doc(auth.currentUser.uid).update(updateData);
+      
+      // Re-fetch from Firestore to confirm
+      const freshDoc = await db.collection("users").doc(auth.currentUser.uid).get();
+      currentUserData = { id: auth.currentUser.uid, ...freshDoc.data() };
+      
+      console.log("Refreshed user data:", currentUserData);
+      
+      // Close modal first
+      closeModal();
+      
+      // Then reload profile
+      loadProfile();
+      document.getElementById("userNameDisplay").innerText = currentUserData.name || auth.currentUser.email;
+      
+      showMessageDialog("Profile Updated", "Your profile has been updated successfully!", "success");
+    } catch (error) {
+      console.error("Profile update error:", error);
+      // Re-enable save button
+      const saveBtn = document.querySelector('#modalConfirmBtn');
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-check"></i> Save Changes';
+      }
+      showMessageDialog("Error", "Failed to update profile: " + error.message, "error");
+    }
+  });
+  
+  // Render disability tags after modal is shown
+  setTimeout(() => {
+    renderDisabilityTags('disabilityTagsContainer', disabilityTags);
+  }, 100);
+}
+
+  // ==========================================
+  // DOCUMENT UPLOAD WITH TIMER
+  // ==========================================
   function showUploadDocumentModal(title, fieldName, acceptTypes = "image/*,application/pdf") {
     const body = `
       <div class="form-group">
         <label><i class="fas fa-file"></i> Upload ${title}</label>
         <div class="file-upload-area" id="fileDropArea">
           <i class="fas fa-cloud-upload-alt"></i>
-          <div>Click to select or drag and drop</div>
+          <div style="font-weight:600; color: var(--gray-600);">Click to select or drag and drop</div>
           <div class="file-name" id="selectedFileName">No file selected</div>
           <input type="file" id="docFileInput" accept="${acceptTypes}" style="display:none;">
         </div>
         <div class="helper-text"><i class="fas fa-info-circle"></i> Max file size: 20MB (PDF or Image)</div>
-        ${currentUserData[fieldName] ? `<div style="margin-top: 10px; color: #10b981;"><i class="fas fa-check-circle"></i> Current file exists. Uploading will replace it.</div>` : ''}
+        ${currentUserData[fieldName] ? `<div style="margin-top: 12px; color: var(--success); font-weight:600; font-size:0.85rem;"><i class="fas fa-check-circle"></i> Current file exists. Uploading will replace it.</div>` : ''}
       </div>
     `;
     
@@ -1018,7 +1298,25 @@
         return;
       }
       
-      showModal("Processing", "<div style='text-align:center'><div class='loading-spinner' style='width:30px;height:30px;margin:20px auto;'></div><p><i class='fas fa-spinner fa-spin'></i> Converting and uploading file...</p></div>", "", "", null, false);
+      showModal("Processing", `
+        <div style='text-align:center; padding: 20px 0;'>
+          <div class='loading-spinner' style='width:48px;height:48px;margin:20px auto;border-width:4px;'></div>
+          <p style="color: var(--gray-600); font-weight:600;"><i class='fas fa-spinner fa-spin'></i> Converting and uploading file...</p>
+          <div class="upload-timer active" id="processingTimer" style="justify-content:center;margin-top:18px;">
+            <i class="fas fa-clock"></i> Elapsed: <span class="timer-value" id="processingTimerValue">00:00</span>
+          </div>
+        </div>
+      `, "", "", null, false);
+      
+      uploadStartTime = Date.now();
+      if (uploadTimerInterval) clearInterval(uploadTimerInterval);
+      uploadTimerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - uploadStartTime) / 1000);
+        const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+        const seconds = String(elapsed % 60).padStart(2, '0');
+        const timerEl = document.getElementById('processingTimerValue');
+        if (timerEl) timerEl.textContent = `${minutes}:${seconds}`;
+      }, 1000);
       
       const reader = new FileReader();
       reader.onload = async (ev) => {
@@ -1030,15 +1328,20 @@
           await db.collection("users").doc(auth.currentUser.uid).update(updateData);
           currentUserData[fieldName] = ev.target.result;
           
+          const elapsed = Math.floor((Date.now() - uploadStartTime) / 1000);
+          stopUploadTimer();
+          
           closeModal();
-          showMessageDialog("Upload Successful", `Your ${title} has been uploaded and saved to Firestore!`, "success");
+          showMessageDialog("Upload Successful", `Your ${title} has been uploaded in ${elapsed} seconds!`, "success");
           loadDocuments();
         } catch (error) {
+          stopUploadTimer();
           closeModal();
           showMessageDialog("Upload Failed", "Error saving to database: " + error.message, "error");
         }
       };
       reader.onerror = () => {
+        stopUploadTimer();
         closeModal();
         showMessageDialog("Upload Failed", "Error processing the file. Please try again.", "error");
       };
@@ -1046,55 +1349,9 @@
     });
   }
 
-  // Setup file upload drag and drop
-  function setupFileUpload() {
-    const dropArea = document.getElementById('fileDropArea');
-    const fileInput = document.getElementById('docFileInput');
-    const fileName = document.getElementById('selectedFileName');
-    
-    if (dropArea && fileInput) {
-      dropArea.addEventListener('click', () => fileInput.click());
-      
-      dropArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropArea.style.borderColor = '#0a4b7a';
-        dropArea.style.background = '#f0f7ff';
-      });
-      
-      dropArea.addEventListener('dragleave', () => {
-        dropArea.style.borderColor = '#e2e8f0';
-        dropArea.style.background = '#fafcff';
-      });
-      
-      dropArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropArea.style.borderColor = '#e2e8f0';
-        dropArea.style.background = '#fafcff';
-        if (e.dataTransfer.files.length) {
-          fileInput.files = e.dataTransfer.files;
-          fileName.textContent = e.dataTransfer.files[0].name;
-        }
-      });
-      
-      fileInput.addEventListener('change', () => {
-        if (fileInput.files.length) {
-          fileName.textContent = fileInput.files[0].name;
-        }
-      });
-    }
-  }
-  
-  function closeModal() {
-    const modal = document.getElementById("modalOverlay");
-    modal.classList.remove('active');
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal();
-    }
-  });
-
+  // ==========================================
+  // LOAD DATA
+  // ==========================================
   function showLoading(show) {
     const loadingScreen = document.getElementById("loadingScreen");
     const dashboardContent = document.getElementById("dashboardContent");
@@ -1107,12 +1364,8 @@
     }
   }
 
-  // Main auth check
   auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = "index.html";
-      return;
-    }
+    if (!user) { window.location.href = "index.html"; return; }
     
     try {
       showLoading(true);
@@ -1127,6 +1380,8 @@
           name: user.displayName || "",
           role: "student",
           status: "pending",
+          department: "",
+          program: "",
           course: "",
           year: "",
           academicYear: "",
@@ -1148,19 +1403,12 @@
         }
       }
       
-      if (currentUserData.role === "admin") {
-        window.location.href = "admin.html";
-        return;
-      } else if (currentUserData.role === "staff") {
-        window.location.href = "staff.html";
-        return;
-      }
+      if (currentUserData.role === "admin") { window.location.href = "admin.html"; return; }
+      else if (currentUserData.role === "staff") { window.location.href = "staff.html"; return; }
       
       document.getElementById("userNameDisplay").innerText = currentUserData.name || user.email;
       
-      await userDocRef.update({
-        lastActive: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      await userDocRef.update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() });
       
       loadProfile();
       loadNotifications();
@@ -1179,7 +1427,6 @@
   function loadProfile() {
     const statusClass = currentUserData.status || "pending";
     
-    // Format disability display
     let disabilityDisplay = currentUserData.disability || "Not set";
     if (currentUserData.disabilityList && currentUserData.disabilityList.length > 0) {
       disabilityDisplay = currentUserData.disabilityList.map(d => 
@@ -1187,21 +1434,21 @@
       ).join(' ');
     }
     
-    // Display course with year
     let courseDisplay = currentUserData.course || "Not set";
-    if (currentUserData.year) {
+    if (currentUserData.year && !courseDisplay.includes(currentUserData.year)) {
       courseDisplay = `${courseDisplay} - ${currentUserData.year}`;
     }
     
     document.getElementById("profileInfo").innerHTML = `
       <p><span class="label"><i class="fas fa-user"></i> Name</span> <span class="value">${currentUserData.name || "N/A"}</span></p>
-      <p><span class="label"><i class="fas fa-book"></i> Course</span> <span class="value">${courseDisplay}</span></p>
+      <p><span class="label"><i class="fas fa-building"></i> Department</span> <span class="value">${currentUserData.department || "Not set"}</span></p>
+      <p><span class="label"><i class="fas fa-book"></i> Program</span> <span class="value">${courseDisplay}</span></p>
       <p><span class="label"><i class="fas fa-calendar-alt"></i> Academic Year</span> <span class="value">${currentUserData.academicYear || "Not set"}</span></p>
       <p><span class="label"><i class="fas fa-wheelchair"></i> Disability</span> <span class="value">${disabilityDisplay}</span></p>
       <p><span class="label"><i class="fas fa-phone"></i> Contact</span> <span class="value">${currentUserData.contact || "Not set"}</span></p>
       <p><span class="label"><i class="fas fa-envelope"></i> Email</span> <span class="value">${currentUserData.email || ""}</span></p>
-      <p><span class="label"><i class="fas fa-check-circle"></i> Status</span> <span class="value"><span class="status-badge ${statusClass}">${statusClass.toUpperCase()}</span></span></p>
-      <p><span class="label"><i class="fas fa-calendar-alt"></i> Registered</span> <span class="value">${currentUserData.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"}</span></p>
+      <p><span class="label"><i class="fas fa-shield-alt"></i> Status</span> <span class="value"><span class="status-badge ${statusClass}">${statusClass.toUpperCase()}</span></span></p>
+      <p><span class="label"><i class="fas fa-calendar-check"></i> Registered</span> <span class="value">${currentUserData.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"}</span></p>
     `;
   }
 
@@ -1213,29 +1460,22 @@
       .orderBy("timestamp", "desc")
       .limit(20)
       .onSnapshot((snap) => {
-        let html = "";
-        snap.forEach(doc => {
-          const n = doc.data();
-          const date = n.timestamp?.toDate?.() || new Date();
-          html += `<div class="notification-item">
-            <strong><i class="fas fa-bullhorn"></i> ${n.title || "Notification"}</strong><br>
-            ${n.body || ""}<br>
-            <small><i class="fas fa-clock"></i> ${date.toLocaleString()}</small>
-          </div>`;
-        });
-        document.getElementById("notificationsList").innerHTML = html || "<em><i class='fas fa-info-circle'></i> No notifications</em>";
-      }, (error) => {
-        console.error("Notifications error:", error);
-      });
+        const unreadCount = snap.size;
+        const badge = document.getElementById('notifBadge');
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+          badge.style.display = 'block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }, (error) => { console.error("Notifications error:", error); });
   }
 
-  // Load messages from admin only
   function loadAdminMessages() {
     if (!auth.currentUser) return;
     
     const userId = auth.currentUser.uid;
     
-    // Listen for admin messages (where role is admin)
     db.collection("messages")
       .where("userId", "==", userId)
       .where("role", "==", "admin")
@@ -1243,47 +1483,43 @@
       .onSnapshot((snap) => {
         let html = "";
         if (snap.empty) {
-          html = `<div style="text-align:center;padding:2rem;color:#4a5568;"><i class="fas fa-inbox"></i> No messages from admin yet</div>`;
+          html = `<div style="text-align:center;padding:2.5rem;color:var(--gray-400);"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.8rem;opacity:0.5;"></i>No messages from admin yet</div>`;
         } else {
           snap.forEach(doc => {
             const msg = doc.data();
             const date = msg.timestamp?.toDate?.() || new Date();
             html += `<div class="admin-message-item">
-              <strong><i class="fas fa-user-shield" style="color:#10b981;"></i> Admin</strong> <span class="admin-badge">Staff</span>
-              ${msg.subject ? `<br><strong>${msg.subject}</strong>` : ''}
-              <br>${msg.text || msg.message || ''}
-              <br><small><i class="fas fa-clock"></i> ${date.toLocaleString()}</small>
+              <strong><i class="fas fa-user-shield" style="color: var(--success);"></i> Admin</strong> <span class="admin-badge">STAFF</span>
+              ${msg.subject ? `<br><span style="font-weight:700; color:var(--primary); font-size:0.88rem;"><i class="fas fa-tag"></i> ${msg.subject}</span>` : ''}
+              <div style="margin-top:6px; color:var(--gray-600); line-height:1.5;">${msg.text || msg.message || ''}</div>
+              <small style="color: var(--gray-400); font-size: 0.72rem; margin-top:6px; display:inline-block;"><i class="fas fa-clock"></i> ${date.toLocaleString()}</small>
             </div>`;
           });
         }
         document.getElementById("adminMessagesContainer").innerHTML = html;
-      }, (error) => {
-        console.error("Admin messages error:", error);
-      });
+      }, (error) => { console.error("Admin messages error:", error); });
   }
 
   function loadDocuments() {
     let html = "";
     
-    // Form Proof
-    if (currentUserData.formProof && currentUserData.formProof !== "") {
-      html += `<div class="document-item">
-        <span class="doc-name"><i class="fas fa-check-circle" style="color:#10b981;"></i> <strong>Form Completion Proof</strong></span>
-        <div class="document-buttons">
-          <a href="${currentUserData.formProof}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
-        </div>
-      </div>`;
-    } else {
-      html += `<div class="document-item">
-        <span class="doc-name"><i class="fas fa-exclamation-circle" style="color:#c53030;"></i> <strong>Form Completion Proof</strong></span>
-        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
-      </div>`;
-    }
+    // if (currentUserData.formProof && currentUserData.formProof !== "") {
+    //   html += `<div class="document-item">
+    //     <span class="doc-name"><i class="fas fa-circle-check" style="color: var(--success);"></i> <strong>Form Completion Proof</strong></span>
+    //     <div class="document-buttons">
+    //       <a href="${currentUserData.formProof}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
+    //     </div>
+    //   </div>`;
+    // } else {
+    //   html += `<div class="document-item">
+    //     <span class="doc-name"><i class="fas fa-circle-exclamation" style="color: var(--danger);"></i> <strong>Form Completion Proof</strong></span>
+    //     <span style="color: var(--danger); font-size:0.82rem; font-weight:600;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+    //   </div>`;
+    // }
     
-    // Medical Certificate
     if (currentUserData.medicalCert && currentUserData.medicalCert !== "") {
       html += `<div class="document-item">
-        <span class="doc-name"><i class="fas fa-file-medical"></i> <strong>Medical Certificate</strong> ${currentUserData.medicalCert_updated ? `<small><i class="fas fa-clock"></i> ${currentUserData.medicalCert_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
+        <span class="doc-name"><i class="fas fa-file-medical"></i> <strong>Medical Certificate</strong> ${currentUserData.medicalCert_updated ? `<small style="color:var(--gray-400);font-size:0.7rem;"><i class="fas fa-clock"></i> ${currentUserData.medicalCert_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
         <div class="document-buttons">
           <a href="${currentUserData.medicalCert}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
         </div>
@@ -1291,14 +1527,13 @@
     } else {
       html += `<div class="document-item">
         <span class="doc-name"><i class="fas fa-file-medical"></i> <strong>Medical Certificate</strong></span>
-        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+        <span style="color: var(--danger); font-size:0.82rem; font-weight:600;"><i class="fas fa-times-circle"></i> Not uploaded</span>
       </div>`;
     }
     
-    // PWD ID Card
     if (currentUserData.pwdIdCard && currentUserData.pwdIdCard !== "") {
       html += `<div class="document-item">
-        <span class="doc-name"><i class="fas fa-id-card"></i> <strong>PWD ID Card</strong> ${currentUserData.pwdIdCard_updated ? `<small><i class="fas fa-clock"></i> ${currentUserData.pwdIdCard_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
+        <span class="doc-name"><i class="fas fa-id-card"></i> <strong>PWD ID Card</strong> ${currentUserData.pwdIdCard_updated ? `<small style="color:var(--gray-400);font-size:0.7rem;"><i class="fas fa-clock"></i> ${currentUserData.pwdIdCard_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
         <div class="document-buttons">
           <a href="${currentUserData.pwdIdCard}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
         </div>
@@ -1306,14 +1541,13 @@
     } else {
       html += `<div class="document-item">
         <span class="doc-name"><i class="fas fa-id-card"></i> <strong>PWD ID Card</strong></span>
-        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+        <span style="color: var(--danger); font-size:0.82rem; font-weight:600;"><i class="fas fa-times-circle"></i> Not uploaded</span>
       </div>`;
     }
     
-    // School ID
     if (currentUserData.schoolId && currentUserData.schoolId !== "") {
       html += `<div class="document-item">
-        <span class="doc-name"><i class="fas fa-school"></i> <strong>School ID</strong> ${currentUserData.schoolId_updated ? `<small><i class="fas fa-clock"></i> ${currentUserData.schoolId_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
+        <span class="doc-name"><i class="fas fa-school"></i> <strong>School ID</strong> ${currentUserData.schoolId_updated ? `<small style="color:var(--gray-400);font-size:0.7rem;"><i class="fas fa-clock"></i> ${currentUserData.schoolId_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
         <div class="document-buttons">
           <a href="${currentUserData.schoolId}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
         </div>
@@ -1321,14 +1555,16 @@
     } else {
       html += `<div class="document-item">
         <span class="doc-name"><i class="fas fa-school"></i> <strong>School ID</strong></span>
-        <span style="color: #c53030;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+        <span style="color: var(--danger); font-size:0.82rem; font-weight:600;"><i class="fas fa-times-circle"></i> Not uploaded</span>
       </div>`;
     }
     
     document.getElementById("documentsArea").innerHTML = html;
   }
 
-  // Send Inquiry
+  // ==========================================
+  // SEND INQUIRY
+  // ==========================================
   document.getElementById("sendInquiryBtn").onclick = async () => {
     const msg = document.getElementById("inquiryMessage").value.trim();
     if (!msg) {
@@ -1337,11 +1573,10 @@
     }
     
     showModal("Send Inquiry", 
-      `<p>Are you sure you want to send this inquiry to admin?</p>
-       <p style="background: #f7fafc; padding: 12px; border-radius: 16px; margin-top: 10px;"><i class="fas fa-quote-left"></i> ${msg}</p>`,
+      `<p style="color:var(--gray-600); font-size:0.9rem; margin-bottom:10px;">Are you sure you want to send this inquiry to admin?</p>
+       <p style="background: var(--gray-50); padding: 14px 16px; border-radius: 14px; margin-top: 10px; border-left: 3px solid var(--accent);"><i class="fas fa-quote-left" style="color:var(--accent);"></i> ${msg}</p>`,
       "Send", "Cancel", async () => {
         try {
-          // Save to inquiries collection (for admin dashboard)
           await db.collection("inquiries").add({
             userId: auth.currentUser.uid,
             sender: currentUserData.name || "Student",
@@ -1360,12 +1595,11 @@
       });
   };
 
-  // Edit Profile
-  document.getElementById("editProfileBtn").onclick = () => {
-    showEditProfileModal();
-  };
+  // ==========================================
+  // EVENT LISTENERS
+  // ==========================================
+  document.getElementById("editProfileBtn").onclick = () => { showEditProfileModal(); };
 
-  // Check Status
   document.getElementById("updateStatusBtn").onclick = async () => {
     try {
       const doc = await db.collection("users").doc(auth.currentUser.uid).get();
@@ -1374,25 +1608,11 @@
       let statusColor = "";
       
       switch(status) {
-        case 'approved':
-          statusMessage = "Your application has been APPROVED! You can now access all PWD services.";
-          statusColor = "success";
-          break;
-        case 'rejected':
-          statusMessage = "Your application has been REJECTED. Please contact the PWD office for assistance.";
-          statusColor = "error";
-          break;
-        case 'dropped':
-          statusMessage = "Your account has been marked as DROPPED. Please contact the PWD office for assistance.";
-          statusColor = "warning";
-          break;
-        case 'graduated':
-          statusMessage = "Congratulations! Your account has been marked as GRADUATED. Thank you for being part of SSU PWD Support.";
-          statusColor = "success";
-          break;
-        default:
-          statusMessage = "Your application is PENDING review. Staff will review your documents and update your status soon.";
-          statusColor = "info";
+        case 'approved': statusMessage = "Your application has been APPROVED!"; statusColor = "success"; break;
+        case 'rejected': statusMessage = "Your application has been REJECTED. Please contact the PWD office."; statusColor = "error"; break;
+        case 'dropped': statusMessage = "Your account has been marked as DROPPED."; statusColor = "warning"; break;
+        case 'graduated': statusMessage = "Congratulations! Your account has been marked as GRADUATED."; statusColor = "success"; break;
+        default: statusMessage = "Your application is PENDING review."; statusColor = "info";
       }
       
       showMessageDialog(`Application Status: ${status.toUpperCase()}`, statusMessage, statusColor);
@@ -1401,29 +1621,14 @@
     }
   };
 
-  // Upload Form Proof
-  document.getElementById("uploadFormProofBtn").onclick = () => {
-    showUploadDocumentModal("Form Completion Proof", "formProof", "image/*,application/pdf");
-  };
+  document.getElementById("uploadMedicalBtn").onclick = () => { showUploadDocumentModal("Medical Certificate", "medicalCert"); };
+  document.getElementById("uploadPWDIdBtn").onclick = () => { showUploadDocumentModal("PWD ID Card", "pwdIdCard"); };
+  document.getElementById("uploadSchoolIdBtn").onclick = () => { showUploadDocumentModal("School ID", "schoolId"); };
 
-  // Upload Documents
-  document.getElementById("uploadMedicalBtn").onclick = () => {
-    showUploadDocumentModal("Medical Certificate", "medicalCert");
-  };
-  
-  document.getElementById("uploadPWDIdBtn").onclick = () => {
-    showUploadDocumentModal("PWD ID Card", "pwdIdCard");
-  };
-  
-  document.getElementById("uploadSchoolIdBtn").onclick = () => {
-    showUploadDocumentModal("School ID", "schoolId");
-  };
-
-  // Logout
   document.getElementById("logoutBtn").onclick = async () => {
     showModal("Logout Confirmation", 
-      `<p>Are you sure you want to logout?</p>
-       <p style="color: #c53030; font-size: 0.9rem;"><i class="fas fa-exclamation-circle"></i> Any unsaved changes will be lost.</p>`,
+      `<p style="color:var(--gray-600); font-size:0.95rem;">Are you sure you want to logout?</p>
+       <p style="color: var(--danger); font-size: 0.85rem; margin-top:8px;"><i class="fas fa-exclamation-circle"></i> Any unsaved changes will be lost.</p>`,
       "Logout", "Cancel", async () => {
         try {
           if (auth.currentUser) {
@@ -1440,9 +1645,7 @@
   };
   
   document.getElementById("fontToggle").onclick = () => document.body.classList.toggle("font-large");
-  document.getElementById("contrastToggle").onclick = () => document.body.classList.toggle("high-contrast");
   
-  // Setup file upload for modal
   document.addEventListener('click', function(e) {
     if (e.target.closest('#fileDropArea')) {
       const fileInput = document.getElementById('docFileInput');
