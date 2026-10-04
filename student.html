@@ -679,82 +679,82 @@
   let disabilityTags = [];
 
   // ==========================================
-  // COURSE/PROGRAM DATA BY DEPARTMENT
+  // IMAGE COMPRESSION FUNCTION
   // ==========================================
-  const departmentPrograms = {
-    "CAS – College of Arts and Sciences": [
-      "Bachelor of Science in Information Technology",
-      "Bachelor of Science in Information System",
-      "Bachelor of Science in Psychology",
-      "Bachelor of Science in Statistics",
-      "Other"
-    ],
-    "CIT – College of Industrial Technology": [
-      "Bachelor of Science in Architecture",
-      "Bachelor of Industrial Technology – Automotive Technology",
-      "Bachelor of Industrial Technology – Electrical Technology",
-      "Bachelor of Industrial Technology – Electronics Technology",
-      "Bachelor of Industrial Technology – Food Technology/Culinary Technology",
-      "Bachelor of Industrial Technology – Drafting Technology",
-      "Other"
-    ],
-    "COED – College of Education": [
-      "Bachelor of Physical Education (BPED)",
-      "Bachelor of Elementary Education (BEEd)",
-      "Bachelor of Secondary Education (BSEd) – English",
-      "Bachelor of Secondary Education (BSEd) – Filipino",
-      "Bachelor of Secondary Education (BSEd) – Mathematics",
-      "Bachelor of Secondary Education (BSEd) – Science",
-      "Bachelor of Secondary Education (BSEd) – Social Studies",
-      "Other"
-    ],
-    "COENG – College of Engineering": [
-      "Bachelor of Science in Civil Engineering",
-      "Bachelor of Science in Electrical Engineering",
-      "Bachelor of Science in Electronics Engineering",
-      "Bachelor of Science in Computer Engineering",
-      "Other"
-    ],
-    "CONHS – College of Nursing and Health Sciences": [
-      "Bachelor of Science in Nursing",
-      "Bachelor of Science in Pharmacy",
-      "Bachelor of Science in Nutrition and Dietetics",
-      "Other"
-    ]
-  };
+  async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      // Only compress image files
+      if (!file.type.startsWith('image/')) {
+        // For non-image files (PDF), return as-is
+        resolve({ file: file, compressed: false });
+        return;
+      }
 
-  // ==========================================
-  // DISABILITY TYPES DATA
-  // ==========================================
-  const disabilityCategories = {
-    "Special Needs Categories": [
-      "Autism Spectrum Disorder (ASD)",
-      "Attention-Deficit/Hyperactivity Disorder (ADHD)",
-      "Intellectual Disability",
-      "Specific Learning Disability",
-      "Speech and Language Disorder",
-      "Hearing Impairment",
-      "Visual Impairment",
-      "Physical Disability",
-      "Developmental Delay",
-      "Multiple Disabilities",
-      "Other"
-    ],
-    "Types of Disability": [
-      "Physical Disability",
-      "Visual Disability",
-      "Deaf or Hard of Hearing Disability",
-      "Intellectual Disability",
-      "Learning Disability",
-      "Mental Disability",
-      "Psychosocial Disability",
-      "Speech and Language Impairment",
-      "Cancer",
-      "Rare Disease",
-      "Orthopedic Disability",
-      "Other"
-    ]
-  };
+      // If file is already small (< 500KB), don't compress
+      if (file.size < 500 * 1024) {
+        resolve({ file: file, compressed: false });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+
+          // Create canvas and draw image
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+
+          // Use white background for transparency (better for PDFs/IDs)
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to JPEG with compression
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve({ 
+                file: compressedFile, 
+                compressed: true, 
+                originalSize: file.size, 
+                compressedSize: blob.size 
+              });
+            } else {
+              // Fallback: return original if compression fails
+              resolve({ file: file, compressed: false });
+            }
+          }, 'image/jpeg', quality);
+        };
+        img.onerror = () => {
+          // If image fails to load, return original
+          resolve({ file: file, compressed: false });
+        };
+        img.src = e.target.result;
+      };
+      reader.onerror = () => {
+        resolve({ file: file, compressed: false });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   // ==========================================
   // MODAL FUNCTIONS
@@ -1270,7 +1270,7 @@ function showEditProfileModal() {
 }
 
   // ==========================================
-  // DOCUMENT UPLOAD WITH TIMER
+  // DOCUMENT UPLOAD WITH COMPRESSION & TIMER
   // ==========================================
   function showUploadDocumentModal(title, fieldName, acceptTypes = "image/*,application/pdf") {
     const body = `
@@ -1282,29 +1282,31 @@ function showEditProfileModal() {
           <div class="file-name" id="selectedFileName">No file selected</div>
           <input type="file" id="docFileInput" accept="${acceptTypes}" style="display:none;">
         </div>
-        <div class="helper-text"><i class="fas fa-info-circle"></i> Max file size: 20MB (PDF or Image)</div>
+        <div class="helper-text"><i class="fas fa-info-circle"></i> Images will be auto-compressed. Max file size: 20MB</div>
         ${currentUserData[fieldName] ? `<div style="margin-top: 12px; color: var(--success); font-weight:600; font-size:0.85rem;"><i class="fas fa-check-circle"></i> Current file exists. Uploading will replace it.</div>` : ''}
       </div>
     `;
     
     showModal(`Upload ${title}`, body, "Upload", "Cancel", async () => {
       const fileInput = document.getElementById("docFileInput");
-      const file = fileInput.files[0];
+      const originalFile = fileInput.files[0];
       
-      if (!file) {
+      if (!originalFile) {
         showMessageDialog("No File Selected", `Please select a file to upload as your ${title}.`, "warning");
         return;
       }
       
-      if (file.size > 20 * 1024 * 1024) {
+      if (originalFile.size > 20 * 1024 * 1024) {
         showMessageDialog("File Too Large", "File size exceeds 20MB limit.", "error");
         return;
       }
       
+      // Show processing modal with timer
       showModal("Processing", `
         <div style='text-align:center; padding: 20px 0;'>
           <div class='loading-spinner' style='width:48px;height:48px;margin:20px auto;border-width:4px;'></div>
-          <p style="color: var(--gray-600); font-weight:600;"><i class='fas fa-spinner fa-spin'></i> Converting and uploading file...</p>
+          <p style="color: var(--gray-600); font-weight:600;"><i class='fas fa-spinner fa-spin'></i> Compressing and uploading...</p>
+          <p style="color: var(--gray-500); font-size:0.82rem; margin-top:8px;" id="compressionStatus"></p>
           <div class="upload-timer active" id="processingTimer" style="justify-content:center;margin-top:18px;">
             <i class="fas fa-clock"></i> Elapsed: <span class="timer-value" id="processingTimerValue">00:00</span>
           </div>
@@ -1320,35 +1322,66 @@ function showEditProfileModal() {
         const timerEl = document.getElementById('processingTimerValue');
         if (timerEl) timerEl.textContent = `${minutes}:${seconds}`;
       }, 1000);
-      
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        try {
-          const updateData = {};
-          updateData[fieldName] = ev.target.result;
-          updateData[`${fieldName}_updated`] = firebase.firestore.FieldValue.serverTimestamp();
-          
-          await db.collection("users").doc(auth.currentUser.uid).update(updateData);
-          currentUserData[fieldName] = ev.target.result;
-          
-          const elapsed = Math.floor((Date.now() - uploadStartTime) / 1000);
-          stopUploadTimer();
-          
-          closeModal();
-          showMessageDialog("Upload Successful", `Your ${title} has been uploaded in ${elapsed} seconds!`, "success");
-          loadDocuments();
-        } catch (error) {
-          stopUploadTimer();
-          closeModal();
-          showMessageDialog("Upload Failed", "Error saving to database: " + error.message, "error");
+
+      try {
+        // Update status
+        const statusEl = document.getElementById('compressionStatus');
+        if (statusEl) statusEl.textContent = originalFile.type.startsWith('image/') ? 'Compressing image...' : 'Processing file...';
+        
+        // Compress image if applicable
+        const { file: processedFile, compressed, originalSize, compressedSize } = await compressImage(originalFile);
+        
+        // Update status
+        if (statusEl) {
+          if (compressed) {
+            const savings = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+            statusEl.textContent = `Image compressed: ${(originalSize/1024/1024).toFixed(2)}MB → ${(compressedSize/1024/1024).toFixed(2)}MB (${savings}% smaller)`;
+          } else {
+            statusEl.textContent = 'Uploading file...';
+          }
         }
-      };
-      reader.onerror = () => {
+        
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+          try {
+            const updateData = {};
+            updateData[fieldName] = ev.target.result;
+            updateData[`${fieldName}_updated`] = firebase.firestore.FieldValue.serverTimestamp();
+            
+            await db.collection("users").doc(auth.currentUser.uid).update(updateData);
+            currentUserData[fieldName] = ev.target.result;
+            
+            const elapsed = Math.floor((Date.now() - uploadStartTime) / 1000);
+            stopUploadTimer();
+            
+            closeModal();
+            
+            let successMsg = `Your ${title} has been uploaded in ${elapsed} seconds!`;
+            if (compressed) {
+              const savings = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+              successMsg += ` Image compressed by ${savings}%.`;
+            }
+            showMessageDialog("Upload Successful", successMsg, "success");
+            loadDocuments();
+          } catch (error) {
+            stopUploadTimer();
+            closeModal();
+            showMessageDialog("Upload Failed", "Error saving to database: " + error.message, "error");
+          }
+        };
+        reader.onerror = () => {
+          stopUploadTimer();
+          closeModal();
+          showMessageDialog("Upload Failed", "Error processing the file. Please try again.", "error");
+        };
+        reader.readAsDataURL(processedFile);
+        
+      } catch (error) {
         stopUploadTimer();
         closeModal();
-        showMessageDialog("Upload Failed", "Error processing the file. Please try again.", "error");
-      };
-      reader.readAsDataURL(file);
+        showMessageDialog("Upload Failed", "Error processing file: " + error.message, "error");
+      }
     });
   }
 
@@ -1506,20 +1539,6 @@ function showEditProfileModal() {
   function loadDocuments() {
     let html = "";
     
-    // if (currentUserData.formProof && currentUserData.formProof !== "") {
-    //   html += `<div class="document-item">
-    //     <span class="doc-name"><i class="fas fa-circle-check" style="color: var(--success);"></i> <strong>Form Completion Proof</strong></span>
-    //     <div class="document-buttons">
-    //       <a href="${currentUserData.formProof}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
-    //     </div>
-    //   </div>`;
-    // } else {
-    //   html += `<div class="document-item">
-    //     <span class="doc-name"><i class="fas fa-circle-exclamation" style="color: var(--danger);"></i> <strong>Form Completion Proof</strong></span>
-    //     <span style="color: var(--danger); font-size:0.82rem; font-weight:600;"><i class="fas fa-times-circle"></i> Not uploaded</span>
-    //   </div>`;
-    // }
-    
     if (currentUserData.medicalCert && currentUserData.medicalCert !== "") {
       html += `<div class="document-item">
         <span class="doc-name"><i class="fas fa-file-medical"></i> <strong>Medical Certificate</strong> ${currentUserData.medicalCert_updated ? `<small style="color:var(--gray-400);font-size:0.7rem;"><i class="fas fa-clock"></i> ${currentUserData.medicalCert_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
@@ -1653,6 +1672,20 @@ function showEditProfileModal() {
     if (e.target.closest('#fileDropArea')) {
       const fileInput = document.getElementById('docFileInput');
       if (fileInput) fileInput.click();
+    }
+  });
+
+  // File input change handler to show selected file name
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.id === 'docFileInput') {
+      const fileNameEl = document.getElementById('selectedFileName');
+      if (fileNameEl && e.target.files.length > 0) {
+        const file = e.target.files[0];
+        const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+        fileNameEl.innerHTML = `<i class="fas fa-file"></i> ${file.name} (${sizeMB} MB)`;
+      } else if (fileNameEl) {
+        fileNameEl.textContent = 'No file selected';
+      }
     }
   });
 </script>
