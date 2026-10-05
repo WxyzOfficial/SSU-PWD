@@ -1282,7 +1282,7 @@ function showEditProfileModal() {
           <div class="file-name" id="selectedFileName">No file selected</div>
           <input type="file" id="docFileInput" accept="${acceptTypes}" style="display:none;">
         </div>
-        <div class="helper-text"><i class="fas fa-info-circle"></i> Images will be auto-compressed. Max file size: 20MB</div>
+        <div class="helper-text"><i class="fas fa-info-circle"></i> Images will be auto-compressed. Max file size: 5MB</div>
         ${currentUserData[fieldName] ? `<div style="margin-top: 12px; color: var(--success); font-weight:600; font-size:0.85rem;"><i class="fas fa-check-circle"></i> Current file exists. Uploading will replace it.</div>` : ''}
       </div>
     `;
@@ -1297,7 +1297,7 @@ function showEditProfileModal() {
       }
       
       if (originalFile.size > 20 * 1024 * 1024) {
-        showMessageDialog("File Too Large", "File size exceeds 20MB limit.", "error");
+        showMessageDialog("File Too Large", "File size exceeds 5MB limit.", "error");
         return;
       }
       
