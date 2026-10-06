@@ -679,82 +679,82 @@
   let disabilityTags = [];
 
   // ==========================================
-  // IMAGE COMPRESSION FUNCTION
+  // COURSE/PROGRAM DATA BY DEPARTMENT
   // ==========================================
-  async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.7) {
-    return new Promise((resolve, reject) => {
-      // Only compress image files
-      if (!file.type.startsWith('image/')) {
-        // For non-image files (PDF), return as-is
-        resolve({ file: file, compressed: false });
-        return;
-      }
+  const departmentPrograms = {
+    "CAS – College of Arts and Sciences": [
+      "Bachelor of Science in Information Technology",
+      "Bachelor of Science in Information System",
+      "Bachelor of Science in Psychology",
+      "Bachelor of Science in Statistics",
+      "Other"
+    ],
+    "CIT – College of Industrial Technology": [
+      "Bachelor of Science in Architecture",
+      "Bachelor of Industrial Technology – Automotive Technology",
+      "Bachelor of Industrial Technology – Electrical Technology",
+      "Bachelor of Industrial Technology – Electronics Technology",
+      "Bachelor of Industrial Technology – Food Technology/Culinary Technology",
+      "Bachelor of Industrial Technology – Drafting Technology",
+      "Other"
+    ],
+    "COED – College of Education": [
+      "Bachelor of Physical Education (BPED)",
+      "Bachelor of Elementary Education (BEEd)",
+      "Bachelor of Secondary Education (BSEd) – English",
+      "Bachelor of Secondary Education (BSEd) – Filipino",
+      "Bachelor of Secondary Education (BSEd) – Mathematics",
+      "Bachelor of Secondary Education (BSEd) – Science",
+      "Bachelor of Secondary Education (BSEd) – Social Studies",
+      "Other"
+    ],
+    "COENG – College of Engineering": [
+      "Bachelor of Science in Civil Engineering",
+      "Bachelor of Science in Electrical Engineering",
+      "Bachelor of Science in Electronics Engineering",
+      "Bachelor of Science in Computer Engineering",
+      "Other"
+    ],
+    "CONHS – College of Nursing and Health Sciences": [
+      "Bachelor of Science in Nursing",
+      "Bachelor of Science in Pharmacy",
+      "Bachelor of Science in Nutrition and Dietetics",
+      "Other"
+    ]
+  };
 
-      // If file is already small (< 500KB), don't compress
-      if (file.size < 500 * 1024) {
-        resolve({ file: file, compressed: false });
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          let width = img.width;
-          let height = img.height;
-
-          // Calculate new dimensions while maintaining aspect ratio
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-
-          // Create canvas and draw image
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-
-          // Use white background for transparency (better for PDFs/IDs)
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, width, height);
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Convert to JPEG with compression
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
-                type: 'image/jpeg',
-                lastModified: Date.now()
-              });
-              resolve({ 
-                file: compressedFile, 
-                compressed: true, 
-                originalSize: file.size, 
-                compressedSize: blob.size 
-              });
-            } else {
-              // Fallback: return original if compression fails
-              resolve({ file: file, compressed: false });
-            }
-          }, 'image/jpeg', quality);
-        };
-        img.onerror = () => {
-          // If image fails to load, return original
-          resolve({ file: file, compressed: false });
-        };
-        img.src = e.target.result;
-      };
-      reader.onerror = () => {
-        resolve({ file: file, compressed: false });
-      };
-      reader.readAsDataURL(file);
-    });
-  }
+  // ==========================================
+  // DISABILITY TYPES DATA
+  // ==========================================
+  const disabilityCategories = {
+    "Special Needs Categories": [
+      "Autism Spectrum Disorder (ASD)",
+      "Attention-Deficit/Hyperactivity Disorder (ADHD)",
+      "Intellectual Disability",
+      "Specific Learning Disability",
+      "Speech and Language Disorder",
+      "Hearing Impairment",
+      "Visual Impairment",
+      "Physical Disability",
+      "Developmental Delay",
+      "Multiple Disabilities",
+      "Other"
+    ],
+    "Types of Disability": [
+      "Physical Disability",
+      "Visual Disability",
+      "Deaf or Hard of Hearing Disability",
+      "Intellectual Disability",
+      "Learning Disability",
+      "Mental Disability",
+      "Psychosocial Disability",
+      "Speech and Language Impairment",
+      "Cancer",
+      "Rare Disease",
+      "Orthopedic Disability",
+      "Other"
+    ]
+  };
 
   // ==========================================
   // MODAL FUNCTIONS
@@ -1539,6 +1539,20 @@ function showEditProfileModal() {
   function loadDocuments() {
     let html = "";
     
+    // if (currentUserData.formProof && currentUserData.formProof !== "") {
+    //   html += `<div class="document-item">
+    //     <span class="doc-name"><i class="fas fa-circle-check" style="color: var(--success);"></i> <strong>Form Completion Proof</strong></span>
+    //     <div class="document-buttons">
+    //       <a href="${currentUserData.formProof}" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
+    //     </div>
+    //   </div>`;
+    // } else {
+    //   html += `<div class="document-item">
+    //     <span class="doc-name"><i class="fas fa-circle-exclamation" style="color: var(--danger);"></i> <strong>Form Completion Proof</strong></span>
+    //     <span style="color: var(--danger); font-size:0.82rem; font-weight:600;"><i class="fas fa-times-circle"></i> Not uploaded</span>
+    //   </div>`;
+    // }
+    
     if (currentUserData.medicalCert && currentUserData.medicalCert !== "") {
       html += `<div class="document-item">
         <span class="doc-name"><i class="fas fa-file-medical"></i> <strong>Medical Certificate</strong> ${currentUserData.medicalCert_updated ? `<small style="color:var(--gray-400);font-size:0.7rem;"><i class="fas fa-clock"></i> ${currentUserData.medicalCert_updated?.toDate?.()?.toLocaleDateString()}</small>` : ''}</span>
@@ -1672,20 +1686,6 @@ function showEditProfileModal() {
     if (e.target.closest('#fileDropArea')) {
       const fileInput = document.getElementById('docFileInput');
       if (fileInput) fileInput.click();
-    }
-  });
-
-  // File input change handler to show selected file name
-  document.addEventListener('change', function(e) {
-    if (e.target && e.target.id === 'docFileInput') {
-      const fileNameEl = document.getElementById('selectedFileName');
-      if (fileNameEl && e.target.files.length > 0) {
-        const file = e.target.files[0];
-        const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-        fileNameEl.innerHTML = `<i class="fas fa-file"></i> ${file.name} (${sizeMB} MB)`;
-      } else if (fileNameEl) {
-        fileNameEl.textContent = 'No file selected';
-      }
     }
   });
 </script>
